@@ -1,0 +1,11 @@
+.env
+.idea
+
+*.pyc
+*.pyo
+octopus/ui
+octopus/devonly.py
+octopus/settings/local_*
+octopus/settings/online_*
+
+db.sqlite3
