@@ -9,3 +9,5 @@ octopus/settings/local_*
 octopus/settings/online_*
 
 db.sqlite3
+
+datasource

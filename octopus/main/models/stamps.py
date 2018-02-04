@@ -22,11 +22,13 @@ class StampCatalog(BaseModel):
 
     name_eng = models.CharField(
         '英文名称',
-        max_length = 64
+        max_length = 64,
+        blank = True,
+        default = ''
     )
 
     official = models.CharField(
-        '官方发行志号',
+        '官方志号',
         max_length = 32,
     )
 
@@ -40,19 +42,53 @@ class StampCatalog(BaseModel):
         default = 1
     )
 
+    sequence_name = models.CharField(
+        '序号名称',
+        max_length = 32,
+        blank = True,
+    )
+
+    face_value = models.IntegerField(
+        '面值/分',
+        default = 20
+    )
+
+    pub_date = models.DateField(
+        '发行日期',
+        default = None
+    )
+
+    pub_number = models.FloatField(
+        '发行量/万'
+    )
+
+    period = models.CharField(
+        '年代分类',
+        choices = PERIODS,
+        max_length = 16,
+        blank = True,
+        editable = False
+    )
+
     gibbons = models.CharField(
         '吉本斯序号',
         max_length = 16,
+        blank = True,
+        default = ''
     )
 
     scott = models.CharField(
         '斯科特序号',
         max_length = 16,
+        blank = True,
+        default = ''
     )
 
     michael = models.CharField(
         '米歇尔序号',
         max_length = 16,
+        blank = True,
+        default = ''
     )
 
     country = models.CharField(
@@ -61,25 +97,23 @@ class StampCatalog(BaseModel):
         default = 'CN'
     )
 
-    pub_date = models.DateField(
-        '发行日期',
-        default = None
-    )
-
     gum = models.BooleanField(
-        '有无出厂背胶',
+        '是否有背胶',
         default = True
     )
 
-    print_method = models.CharField(
-        max_length = 16,
-        choices = PRINT_CHOICES
+    image_url = models.URLField(
+        blank = True,
+        editable = False,
     )
 
-    period = models.CharField(
-        choices = PERIODS,
-        max_length = 16,
-    )
+    # print_method = models.CharField(
+    #    max_length = 16,
+    #    choices = PRINT_CHOICES
+    # )
+
+    class Meta:
+        unique_together = ('official', 'sequence')
 
 class Stamp(BaseModel):
     catalog = models.ForeignKey(

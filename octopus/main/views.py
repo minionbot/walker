@@ -6,4 +6,4 @@ from django.http import HttpResponse
 from octopus.main.models import *
 
 def index(request):
-    return HttpResponse("Hello, My Stamps count is %s", len(Cover.objects.all()))
+    return HttpResponse("Hello, My Stamps count is %s" % len(Cover.objects.all()))
