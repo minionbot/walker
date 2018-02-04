@@ -18,7 +18,6 @@ for env, mode in list(__env_names.items()):
         pass
 
 def prepare_env():
-    print ('octopus.settings.%s' % MODE)
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'octopus.settings.%s' % MODE)
     from django.conf import settings
     if not settings.DEBUG:

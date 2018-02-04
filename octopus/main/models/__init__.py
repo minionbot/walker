@@ -2,4 +2,5 @@
 # Copyright © 2017  All Rights Reserved.
 # Wangjing (wangjild@gmail.com)
 
-from __future__ import unicode_literals
+from .cover import *
+from .stamps import *

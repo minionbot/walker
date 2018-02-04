@@ -9,9 +9,6 @@ from .defaults import *
 
 DEBUG = True
 
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
 try:
     # include(settings_file, optional(settings_files), scope = locals())
     include(optional('local_*.py'), scope = locals())

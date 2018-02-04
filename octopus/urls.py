@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 
+from octopus.main.views import index
+
 import xadmin
 xadmin.autodiscover()
 
@@ -24,5 +26,6 @@ from xadmin.plugins import xversion
 xversion.register_models()
 
 urlpatterns = [
-    url(r'xadmin/', include(xadmin.site.urls)),
+    url(r'^$', index, name='index'),
+    url(r'xadmin', include(xadmin.site.urls)),
 ]

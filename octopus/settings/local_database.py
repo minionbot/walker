@@ -3,3 +3,18 @@
 # Wangjing (wangjild@gmail.com)
 
 from __future__ import unicode_literals
+
+# Database
+# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'octopus_offline',
+        'USER': 'octopus_w',
+        'PASSWORD': 'octopus_offline',
+        'HOST': '10.6.131.78',
+        'PORT': '9306',
+        'CONN_MAX_AGE': 0,
+    },
+}

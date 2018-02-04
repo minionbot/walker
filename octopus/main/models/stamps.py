@@ -6,20 +6,14 @@ from __future__ import unicode_literals
 
 from django.db import models
 from .base import BaseModel
+from .const import *
 
-PRINT_LITHOGRAPHY = 'lithography'
-PRINT_LETTERPRESS = 'letterpress'
-PRINT_PHOTOGRAVURE = 'photogravure' #影写版
-PRINT_ENGRAVING = 'engraving' # 雕刻版
+__all__ = [
+    'StampCatalog',
+    'Stamp'
+]
 
-PRINT_CHOICES = (
-    (PRINT_LITHOGRAPHY, PRINT_LITHOGRAPHY),
-    (PRINT_LETTERPRESS, PRINT_LETTERPRESS),
-    (PRINT_LETTERPRESS, PRINT_LETTERPRESS),
-    (PRINT_LITHOGRAPHY, PRINT_LITHOGRAPHY),
-)
-
-class Catalog(BaseModel):
+class StampCatalog(BaseModel):
 
     name = models.CharField(
         '名称',
@@ -68,7 +62,8 @@ class Catalog(BaseModel):
     )
 
     pub_date = models.DateField(
-        '发行日期'
+        '发行日期',
+        default = None
     )
 
     gum = models.BooleanField(
@@ -79,4 +74,30 @@ class Catalog(BaseModel):
     print_method = models.CharField(
         max_length = 16,
         choices = PRINT_CHOICES
+    )
+
+    period = models.CharField(
+        choices = PERIODS,
+        max_length = 16,
+    )
+
+class Stamp(BaseModel):
+    catalog = models.ForeignKey(
+        StampCatalog,
+        default = None,
+        on_delete = models.CASCADE
+    )
+
+    is_canceled = models.BooleanField(
+        default = False
+    )
+
+    count = models.IntegerField(
+        default = 1
+    )
+
+    postmark = models.CharField(
+        choices = MARK_TYPE,
+        max_length = 16,
+        default = MARK_TYPE_NORMAL
     )
