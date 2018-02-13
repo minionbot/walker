@@ -5,10 +5,23 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
-import scrapy
+from octopus.setup import prepare_env
+prepare_env()
 
+import django
+django.setup()
 
-class TentacleItem(scrapy.Item):
+from scrapy_djangoitem import DjangoItem
+from octopus.main.models.stamps import StampGroupCatalog, StampSingleCatalog
+from octopus.collect.models import KongfzInstance
+
+class StampGroupCatalogItem(DjangoItem):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    django_model = StampGroupCatalog
+
+class StampSingleCatalogItem(DjangoItem):
+    django_model = StampSingleCatalog
+
+class KongfzInstanceItem(DjangoItem):
+    django_model = KongfzInstance

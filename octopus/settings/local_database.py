@@ -16,5 +16,12 @@ DATABASES = {
         'HOST': '10.6.131.78',
         'PORT': '9306',
         'CONN_MAX_AGE': 0,
+        'OPTIONS': {
+            'charset': 'utf8',
+            'init_command': 'SET '
+                            'storage_engine=INNODB,'
+                            'character_set_connection=utf8,'
+                            'collation_connection=utf8_bin'
+        }
     },
 }

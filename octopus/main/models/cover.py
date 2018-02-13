@@ -65,7 +65,7 @@ class CoverBase(BaseModel, PolymorphicModel):
 
 class CoverCatalog(CoverBase):
     stamp_catalog = models.ManyToManyField(
-        'main.StampCatalog',
+        'main.StampGroupCatalog',
         default = None
     )
 
@@ -81,7 +81,7 @@ class CoverStampCatalog(models.Model):
     """
 
     stamp_catalog = models.ForeignKey(
-        'StampCatalog',
+        'StampGroupCatalog',
         on_delete = models.CASCADE
     )
 
@@ -129,7 +129,7 @@ class Cover(BaseModel):
     )
 
     unoffical_stamps = models.ManyToManyField(
-        'StampCatalog',
+        'StampGroupCatalog',
         through = 'CoverStampCatalog',
         default = None
     )

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'octopus.main',
+    'octopus.collect',
     'xadmin',
     'crispy_forms',
     'reversion',
@@ -99,7 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'zh-CN'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -112,3 +113,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+SLACK_API_TOKEN = 'xoxp-279644479937-280086748243-313554941136-1d69542cceca2fa2f09de0b8c4b270c7'
+
+################## Celey 相关配置 ##########################
+CELERY_TIMEZONE = 'Asia/Hong_Kong'
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TRACK_STARTED = True
+CELERYD_TASK_TIME_LIMIT = None
+CELERYD_TASK_SOFT_TIME_LIMIT = None
+CELERYBEAT_SCHEDULER = 'celery.beat.PersistentScheduler'
+CELERYBEAT_MAX_LOOP_INTERVAL = 60
+
+CELERY_RESULT_BACKEND = 'redis://'
+CELERY_RESULT_PERSISTENT = True
+
+CELERY_TASK_TIME_LIMIT = 1800  # 30 minutes
+CELERY_TASK_SOFT_TIME_LIMIT = 1680
+CELERY_POOL = 'celery.concurrency.threads:TaskPool'
+CELERY_IMPORTS = [
+    'octopus.tasks',
+    'octopus.celery',
+]
+
+CELERYD_MAX_TASKS_PER_CHILD = 1
+CELERY_ACKS_LATE = True
+CELERYD_PREFETCH_MULTIPLIER = 1
+

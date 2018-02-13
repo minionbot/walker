@@ -9,32 +9,17 @@ from .base import BaseModel
 from .const import *
 
 __all__ = [
-    'StampCatalog',
+    'StampGroupCatalog',
+    'StampSingleCatalog',
     'Stamp'
 ]
 
-class StampCatalog(BaseModel):
+class StampSingleCatalog(BaseModel):
 
-    name = models.CharField(
-        '名称',
-        max_length = 64
-    )
-
-    name_eng = models.CharField(
-        '英文名称',
-        max_length = 64,
-        blank = True,
-        default = ''
-    )
-
-    official = models.CharField(
-        '官方志号',
-        max_length = 32,
-    )
-
-    group_num = models.SmallIntegerField(
-        '套内票数',
-        default = 1
+    group = models.ForeignKey(
+        to = 'StampGroupCatalog',
+        on_delete = models.CASCADE,
+        related_name = 'items'
     )
 
     sequence = models.SmallIntegerField(
@@ -48,26 +33,20 @@ class StampCatalog(BaseModel):
         blank = True,
     )
 
-    face_value = models.IntegerField(
-        '面值/分',
-        default = 20
+    pub_number = models.FloatField(
+        '发行量/万',
+        null = True
     )
 
     pub_date = models.DateField(
         '发行日期',
-        default = None
+        default = None,
+        null = True,
     )
 
-    pub_number = models.FloatField(
-        '发行量/万'
-    )
-
-    period = models.CharField(
-        '年代分类',
-        choices = PERIODS,
-        max_length = 16,
-        blank = True,
-        editable = False
+    face_value = models.IntegerField(
+        '面值/分',
+        default = 20
     )
 
     gibbons = models.CharField(
@@ -91,6 +70,45 @@ class StampCatalog(BaseModel):
         default = ''
     )
 
+
+class StampGroupCatalog(BaseModel):
+
+    name = models.CharField(
+        '名称',
+        max_length = 64
+    )
+
+    official = models.CharField(
+        '官方志号',
+        unique = True,
+        max_length = 32,
+    )
+
+    group_num = models.SmallIntegerField(
+        '套内票数',
+        default = 1
+    )
+
+    total_face_value = models.IntegerField(
+        '面值/分',
+        default = 20
+    )
+
+    period = models.CharField(
+        '年代分类',
+        choices = PERIODS,
+        max_length = 16,
+        blank = True,
+        editable = False
+    )
+
+    name_eng = models.CharField(
+        '英文名称',
+        max_length = 64,
+        blank = True,
+        default = ''
+    )
+
     country = models.CharField(
         '发行国家',
         max_length = 16,
@@ -103,8 +121,14 @@ class StampCatalog(BaseModel):
     )
 
     image_url = models.URLField(
+        default = '',
         blank = True,
         editable = False,
+    )
+
+    reference = models.URLField(
+        '来源',
+        blank = True,
     )
 
     # print_method = models.CharField(
@@ -113,11 +137,12 @@ class StampCatalog(BaseModel):
     # )
 
     class Meta:
-        unique_together = ('official', 'sequence')
+        verbose_name_plural = '邮票目录'
+
 
 class Stamp(BaseModel):
     catalog = models.ForeignKey(
-        StampCatalog,
+        StampGroupCatalog,
         default = None,
         on_delete = models.CASCADE
     )

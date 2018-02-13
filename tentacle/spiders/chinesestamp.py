@@ -2,11 +2,13 @@
 import scrapy
 import re
 
+from tentacle.items import StampGroupCatalogItem, StampSingleCatalogItem, StampGroupCatalog, StampSingleCatalog
+
 class ChinesestampSpider(scrapy.Spider):
     name = 'chinesestamp'
     allowed_domains = ['www.chinesestamp.cn']
     start_urls = [
-        #'http://www.chinesestamp.cn/j',
+        'http://www.chinesestamp.cn/j',
         'http://www.chinesestamp.cn/t',
         #'http://www.chinesestamp.cn/ji',
         #'http://www.chinesestamp.cn/te',
@@ -34,6 +36,35 @@ class ChinesestampSpider(scrapy.Spider):
         image_url = response.css('div#contents .post_content p a::attr(href)').extract_first()
         if image_url is None:
             image_url = response.css('div#contents .post_content p image::attr(href)').extract_first()
+
+        item = StampGroupCatalogItem()
+        item['name'] = name.strip()
+        item['official'] = official.strip()
+        item['group_num'] = group_num
+        item['total_face_value'] = 0
+        for result in results:
+            item['total_face_value'] += int(result.get('face_value', 0))
+        item['reference'] = response._get_url()
+        item['image_url'] = image_url or ''
+
+        try:
+            group = StampGroupCatalog.objects.get(official = official.strip())
+        except StampGroupCatalog.DoesNotExist:
+            group = item.save()
+
+        for result in results:
+            item = StampSingleCatalogItem()
+            item['group'] = group
+            item['sequence'] = result['sequence']
+            item['sequence_name'] = result['sequence_name']
+            item['face_value'] = result.get('face_value', 0)
+            item['pub_number'] = result.get('pub_number', 0.0)
+            if pub_date:
+                item['pub_date'] = pub_date
+            try:
+                item = StampSingleCatalog.objects.get(group = group, sequence = result['sequence'])
+            except StampSingleCatalog.DoesNotExist:
+                item.save()
 
         yield {
             'official': official.strip(),
@@ -79,7 +110,7 @@ class ChinesestampSpider(scrapy.Spider):
         else:
             results = [{'sequence': 1, 'sequence_name': name}]
 
-        return pub_date, len(results), results
+        return pub_date.replace('.', '-'), len(results), results
 
     def parse_t_stamp_content(self, contents, name, official):
 
@@ -156,4 +187,4 @@ class ChinesestampSpider(scrapy.Spider):
         elif 'M' in official:
             results = [{'sequence': 1, 'sequence_name': name}]
 
-        return pub_date, len(results), results
+        return pub_date.replace('.', '-'), len(results), results
