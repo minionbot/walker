@@ -30,8 +30,6 @@ def send_slack(channel, name, image_url, reference):
         }
       ])
 
-    return {
-        'status': results['ok']
-    }
+    return results
 
 

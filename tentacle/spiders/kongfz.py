@@ -11,6 +11,8 @@ from tentacle.items import KongfzInstanceItem
 
 from cached_property import cached_property
 
+from django.utils.timezone import datetime
+
 class KongfzSpider(scrapy.Spider):
     name = 'kongfz'
 
@@ -20,7 +22,8 @@ class KongfzSpider(scrapy.Spider):
 
     def start_requests(self):
         return [
-            self.get_sell_request('原地', 1)
+            self.get_sell_request('原地', 1),
+            self.get_auction_request('原地', 1)
         ]
 
     @cached_property
@@ -56,6 +59,22 @@ class KongfzSpider(scrapy.Spider):
             }
         )
 
+    def get_auction_request(self, key, page):
+        return scrapy.FormRequest(
+            "https://app.kongfz.com/auction/searchAuction",
+            formdata = {
+                'UserAgent': 'IOS_KFZ_COM_2.0.7_iPhone 7 Plus_10.3.3',
+                'catId': '36',
+                'key': str(key),
+                'order': '-1',
+                'page': str(page),
+                'type': '1',
+            },
+            meta = {
+                'page': int(page)
+            }
+        )
+
     def parse(self, response):
         body = json.loads(response.body_as_unicode())
         page = response.meta['page']
@@ -64,22 +83,33 @@ class KongfzSpider(scrapy.Spider):
             yield body
 
         imported = True
+        is_auction = 'searchAuction' in response._get_url()
+
         for it in body['list']:
             if it['id'] in self.imported_instances:
                 continue
 
             # save item
             item = KongfzInstanceItem()
-            item['price'] = float(it['price'])
             item['name'] = it['name']
             item['source_id'] = it['id']
             item['image_url'] = it['smallImg']
-            item['reference'] = 'http://book.kongfz.com/{}/{}/'.format(it['shopId'], it['id'])
-            item['put_on_date'] = it['date']
+            item['is_auction'] = is_auction
+            if is_auction:
+                item['price'] = float(it['beginPrice'])
+                item['reference'] = 'http://m.kongfz.cn/{}'.format(it['id'])
+                item['put_on_date'] = datetime.fromtimestamp(it['beginTime'])
+            else:
+                item['price'] = float(it['price'])
+                item['reference'] = 'http://book.kongfz.com/{}/{}/'.format(it['shopId'], it['id'])
+                item['put_on_date'] = it['date']
             instance = item.save()
             imported = False
 
         if self.mode == 'init' or not imported:
-            yield self.get_sell_request('原地', page + 1)
+            if is_auction:
+                yield self.get_auction_request('原地', page + 1)
+            else:
+                yield self.get_sell_request('原地', page + 1)
 
         yield body

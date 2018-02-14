@@ -114,8 +114,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-SLACK_API_TOKEN = 'xoxp-279644479937-280086748243-313554941136-1d69542cceca2fa2f09de0b8c4b270c7'
-
 ################## Celey 相关配置 ##########################
 CELERY_TIMEZONE = 'Asia/Hong_Kong'
 

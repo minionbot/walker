@@ -41,6 +41,11 @@ class KongfzInstance(BaseInstance):
         unique = True,
     )
 
+    is_auction = models.BooleanField(
+        '是否拍卖',
+        default = False,
+    )
+
     def __str__(self):
         return '({}) {}'.format(self.price, self.name)
 
