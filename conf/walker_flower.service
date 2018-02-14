@@ -1,0 +1,15 @@
+[Unit]
+Description=Celery Flower
+After=network.target
+[Service]
+Type=simple
+ExecStart=/bin/sh -c '${CELERY_BIN} flower -A ${CELERY_APP} --port=6002'
+ExecStop=/bin/kill -s HUP ${MAINPID}
+ExecReload=/bin/kill -s KILL ${MAINPID}
+Restart=always
+KillMode=control-group
+KillSignal=INT
+WorkingDirectory=/home/wangjing/opt/walker/
+EnvironmentFile=-/home/wangjing/opt/walker/conf/celery_param
+[Install]
+WantedBy=default.target
