@@ -29,6 +29,14 @@ app = Celery('octopus.tasks')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks()
 
+app.conf.beat_schedule = {
+    'search-kongfz-every-one-hour': {
+        'task': 'octopus.tasks.kongfz_search',
+        'schedule': 60.0 * 60,
+        'args': ()
+    },
+}
+
 @app.task(bind=True)
 def debug_task(self):
     logger.info("!!!Debug Task!!!")

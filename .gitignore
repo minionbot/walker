@@ -11,3 +11,7 @@ octopus/settings/online_*
 db.sqlite3
 
 datasource
+
+celerybeat-schedule
+
+log

@@ -14,7 +14,9 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+PROJ_DIR = os.path.dirname(BASE_DIR)
+LOG_ROOT = os.path.join(PROJ_DIR, 'log')
+JOBOUTPUT_ROOT = os.path.join(LOG_ROOT, 'tentacle')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -140,4 +142,8 @@ CELERY_IMPORTS = [
 CELERYD_MAX_TASKS_PER_CHILD = 1
 CELERY_ACKS_LATE = True
 CELERYD_PREFETCH_MULTIPLIER = 1
+
+### Celery Period Task ###
+
+
 
