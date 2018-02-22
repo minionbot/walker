@@ -12,6 +12,7 @@ db.sqlite3
 
 datasource
 
-celerybeat-schedule
+celerybeat-schedule*
 
+var
 log

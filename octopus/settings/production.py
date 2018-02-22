@@ -9,6 +9,8 @@ import traceback
 from split_settings.tools import optional, include
 from .defaults import *
 
+INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
+
 try:
     # include(settings_file, optional(settings_files), scope = locals())
     include(optional('online_*.py'), scope = locals())
@@ -16,3 +18,5 @@ try:
 except ImportError:
     traceback.print_exc()
     sys.exit(1)
+
+
