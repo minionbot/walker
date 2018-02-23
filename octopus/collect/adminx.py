@@ -6,13 +6,13 @@ from django.contrib import admin
 from django.utils.html import format_html_join, format_html
 
 # Register your models here.
-from .models import KongfzInstance
+from .models import KongfzInstance, ZhaoInstance
 
 import xadmin
 
 class KongfzInstanceAdmin(object):
 
-    list_display = ('name', 'price', 'date', 'image')
+    list_display = ('name', 'price', 'stage', 'date', 'image', )
 
     def image(self, obj):
         return format_html("<a href='{}' target='_blank'><img src='{}' width='160' /></a>".format(
@@ -27,3 +27,10 @@ class KongfzInstanceAdmin(object):
 
 
 xadmin.site.register(KongfzInstance, KongfzInstanceAdmin)
+
+
+class ZhaoInstanceAdmin(KongfzInstanceAdmin):
+    pass
+
+
+xadmin.site.register(ZhaoInstance, ZhaoInstanceAdmin)

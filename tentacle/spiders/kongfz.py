@@ -61,7 +61,8 @@ class KongfzSpider(scrapy.Spider):
                 'shopName': ''
             },
             meta = {
-                'page': int(page)
+                'page': int(page),
+                'search': str(key)
             }
         )
 
@@ -77,13 +78,15 @@ class KongfzSpider(scrapy.Spider):
                 'type': '1',
             },
             meta = {
-                'page': int(page)
+                'page': int(page),
+                'search': str(key)
             }
         )
 
     def parse(self, response):
         body = json.loads(response.body_as_unicode())
         page = response.meta['page']
+        search = response.meta['search']
 
         if len(body['list']) == 0:
             yield body
@@ -114,8 +117,8 @@ class KongfzSpider(scrapy.Spider):
 
         if self.mode == 'init' or not imported:
             if is_auction:
-                yield self.get_auction_request('原地', page + 1)
+                yield self.get_auction_request(search, page + 1)
             else:
-                yield self.get_sell_request('原地', page + 1)
+                yield self.get_sell_request(search, page + 1)
 
         yield body
