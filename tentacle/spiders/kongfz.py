@@ -8,10 +8,12 @@ import json
 
 from octopus.collect.models import KongfzInstance
 from tentacle.items import KongfzInstanceItem
+from tentacle.conf import SEARCHES
 
 from cached_property import cached_property
 
 from django.utils.timezone import datetime
+
 
 class KongfzSpider(scrapy.Spider):
     name = 'kongfz'
@@ -21,10 +23,14 @@ class KongfzSpider(scrapy.Spider):
         super(KongfzSpider).__init__(**kwargs)
 
     def start_requests(self):
-        return [
-            self.get_sell_request('原地', 1),
-            self.get_auction_request('原地', 1)
-        ]
+        requests = []
+        for word in SEARCHES:
+            requests.extend([
+                self.get_sell_request(word, 1),
+                self.get_auction_request(word, 1)
+            ])
+
+        return requests
 
     @cached_property
     def imported_instances(self):
