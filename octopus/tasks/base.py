@@ -121,7 +121,7 @@ class BaseTask(Task):
 
         last_stdout_update = time.time()
 
-        expect_list = [pexpect.EOF]
+        expect_list = [pexpect.EOF, pexpect.TIMEOUT]
         expect_passwords = {}
         pexpect_timeout = getattr(settings, 'PEXPECT_TIMEOUT', 5)
 
