@@ -77,6 +77,9 @@ class BaseTask(Task):
         env['PYTHONPATH'] = os.pathsep.join(python_paths)
         env['JOB_STDOUT_FILENAME'] = '%s-%s.out' % (self.name, str(uuid.uuid1()))
 
+        # build python virtualenv path
+        value = os.path.join(settings.PROJ_DIR, '.env', 'bin')
+        env['PATH'] = os.environ.get('PATH', '/usr/bin') + ':' + value
         return env
 
     def args2cmdline(self, *args):
