@@ -35,6 +35,11 @@ app.conf.beat_schedule = {
         'schedule': 60.0 * 60,
         'args': ()
     },
+    'search-zhao-every-one-hour': {
+        'task': 'octopus.tasks.zhao_search',
+        'schedule': 60.0 * 60,
+        'args': ()
+    },
 }
 
 @app.task(bind=True)

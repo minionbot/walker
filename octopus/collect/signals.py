@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import KongfzInstance
+from .models import KongfzInstance, ZhaoInstance
 from octopus.tasks.notify import send_slack
 
 @receiver(post_save, sender = KongfzInstance)
-def notify(sender, **kwargs):
+def kfz_notify(sender, **kwargs):
     instance = kwargs['instance']
     created = kwargs['created']
     if not created:
@@ -19,3 +19,11 @@ def notify(sender, **kwargs):
 
     send_slack.delay('#kongfz', instance.name, instance.image_url, instance.reference)
 
+@receiver(post_save, sender = ZhaoInstance)
+def zhao_notify(sender, **kwargs):
+    instance = kwargs['instance']
+    created = kwargs['created']
+    if not created:
+        return
+
+    send_slack.delay('#zhaoonline', instance.name, instance.image_url, instance.reference)
