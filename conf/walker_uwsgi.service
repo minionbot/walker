@@ -1,0 +1,9 @@
+[Service]
+ExecStart=/home/wangjing/opt/walker/bin/uwsgi_run.sh
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+ExecStop=/bin/kill -s INT $MAINPID
+KillMode=control-group
+KillSignal=INT
+[Install]
+WantedBy=default.target

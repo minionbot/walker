@@ -13,11 +13,9 @@ django.setup()
 
 from scrapy_djangoitem import DjangoItem
 from octopus.main.models.stamps import StampGroupCatalog, StampSingleCatalog
-from octopus.collect.models import KongfzInstance, ZhaoInstance
+from octopus.collect.models import KongfzInstance, ZhaoInstance, QQBBInstance
 
 class StampGroupCatalogItem(DjangoItem):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
     django_model = StampGroupCatalog
 
 class StampSingleCatalogItem(DjangoItem):
@@ -28,3 +26,6 @@ class KongfzInstanceItem(DjangoItem):
 
 class ZhaoInstanceItem(DjangoItem):
     django_model = ZhaoInstance
+
+class QQBBInstanceItem(DjangoItem):
+    django_model = QQBBInstance

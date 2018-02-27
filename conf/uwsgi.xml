@@ -1,0 +1,21 @@
+<uwsgi>
+    <http>0.0.0.0:9321</http>
+    <module>octopus.wsgi:application</module>
+    <workers>10</workers>
+    <listen>64</listen>
+    <socket-timeout>1</socket-timeout>
+    <reload-mercy>300</reload-mercy>
+    <harakiri>12</harakiri>
+    <harakiri-verbose/>
+    <disable-logging/>
+    <logto>/home/wangjing/opt/walker/log/uwsgi.log</logto>
+    <log-maxsize>2147483647</log-maxsize>
+    <log-slow>1000</log-slow>
+    <enable-threads>true</enable-threads>
+    <!--daemonize/-->
+    <master/>
+    <lazy/>
+    <py-tracebacker>/home/wangjing/opt/walker/uwsgi_traceback_octopus</py-tracebacker>
+    <buffer-size>65536</buffer-size>
+    <post-buffering>65536</post-buffering>
+</uwsgi>

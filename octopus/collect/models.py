@@ -65,10 +65,10 @@ class AuctionMixin(models.Model):
     class Meta:
         abstract = True
 
-class KongfzInstance(BaseInstance, AuctionMixin):
-
     def __str__(self):
         return '({}) {}'.format(self.price, self.name)
+
+class KongfzInstance(BaseInstance, AuctionMixin):
 
     class Meta:
         verbose_name_plural = '空夫子列表'
@@ -76,9 +76,12 @@ class KongfzInstance(BaseInstance, AuctionMixin):
 
 class ZhaoInstance(BaseInstance, AuctionMixin):
 
-    def __str__(self):
-        return '({}) {}'.format(self.price, self.name)
-
     class Meta:
         verbose_name_plural = '赵勇列表'
+        ordering = ['-put_on_date']
+
+class QQBBInstance(BaseInstance, AuctionMixin):
+    
+    class Meta:
+        verbose_name_plural = '七七八八'
         ordering = ['-put_on_date']
