@@ -15,7 +15,7 @@
     <!--daemonize/-->
     <master/>
     <lazy/>
-    <py-tracebacker>/home/wangjing/opt/walker/uwsgi_traceback_octopus</py-tracebacker>
+    <py-tracebacker>/home/wangjing/opt/walker/tmp/uwsgi_traceback_octopus</py-tracebacker>
     <buffer-size>65536</buffer-size>
     <post-buffering>65536</post-buffering>
 </uwsgi>
