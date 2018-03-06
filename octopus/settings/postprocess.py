@@ -22,6 +22,10 @@ LOGGING = {
         'require_debug_false': {'()': 'octopus.main.compat.RequireDebugFalse'},
         'require_debug_true': {'()': 'octopus.main.compat.RequireDebugTrue'},
     },
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
     'formatters': {
         'verbose': {
             'format': '[%(levelname)s] [%(asctime)s] [%(module)s] [%(process)d] [%(thread)d] : %(message)s'
@@ -57,6 +61,11 @@ LOGGING = {
             'backupCount': LOGBACKUP_DAY,
             'formatter': 'verbose'
         },
+        'sentry': {
+            'level': 'ERROR',  # To capture more than ERROR, change to WARNING, INFO, etc.
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'tags': {'custom-tag': 'x'},
+        },
     },
     'loggers': {
         'django': {
@@ -80,6 +89,11 @@ LOGGING = {
         },
         'celery': {
             'handlers': ['console', 'celery_handler'],
+            'level': COMMON_LOG_LEVEL,
+            'propagate': True
+        },
+        'scrapy': {
+            'handlers': ['console', 'sentry'],
             'level': COMMON_LOG_LEVEL,
             'propagate': True
         },

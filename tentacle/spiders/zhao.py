@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import scrapy
 import json
 
-from octopus.collect.models import ZhaoInstance, AUCTION_AUCTION, AUCTION_ENDED, AUCTION_PREVIEW
+from octopus.collect.models import ZhaoInstance, SELL_AUCTION, SELL_ENDED, SELL_PREVIEW
 from tentacle.items import ZhaoInstanceItem
 from tentacle.conf import SEARCHES
 
@@ -65,7 +65,7 @@ class ZhaoSpider(scrapy.Spider):
 
         stage = response.meta['stage']
         search = response.meta['search']
-        action_type = AUCTION_PREVIEW if stage == '1' else AUCTION_AUCTION
+        action_type = SELL_PREVIEW if stage == '1' else SELL_AUCTION
 
         if len(body['list']) == 0:
             yield body
@@ -84,6 +84,7 @@ class ZhaoSpider(scrapy.Spider):
             item['price'] = float(it['price'] + it['serviceFee'])
             item['reference'] = 'http://www.zhaoonline.com/xinzhongguofengpianjian/{}.shtml'.format(it['auctionNo'])
             item['put_on_date'] = it['startAt']
+            item['begin_time'] = it['startAt']
             item['stage'] = action_type
 
             instance = item.save()

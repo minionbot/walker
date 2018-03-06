@@ -34,20 +34,33 @@ class BaseInstance(BaseModel, PolymorphicModel):
         null = True
     )
 
+    watching = models.BooleanField(
+        '关注',
+        default = False
+    )
 
-AUCTION_PREVIEW = '预览'
-AUCTION_AUCTION = '拍卖中'
-AUCTION_ENDED = '结束'
-AUCTION_TYPES = (
-    (AUCTION_PREVIEW, AUCTION_PREVIEW),
-    (AUCTION_AUCTION, AUCTION_AUCTION),
-    (AUCTION_ENDED, AUCTION_ENDED),
+    search_key = models.CharField(
+        '检索词',
+        default = '',
+        max_length = 64,
+    )
+
+
+SELL_PREVIEW = '预览中'
+SELL_AUCTION = '拍卖中'
+SELL_SELLING = '出售中'
+SELL_ENDED = '已结束'
+SELL_TYPES = (
+    (SELL_PREVIEW, SELL_PREVIEW),
+    (SELL_AUCTION, SELL_AUCTION),
+    (SELL_SELLING, SELL_SELLING),
+    (SELL_ENDED, SELL_ENDED),
 )
 
 class AuctionMixin(models.Model):
 
     source_id = models.BigIntegerField(
-        '源站ID',
+        '源站拍卖ID',
         unique = True,
     )
 
@@ -57,9 +70,26 @@ class AuctionMixin(models.Model):
     )
 
     stage = models.CharField(
-        choices = AUCTION_TYPES,
-        default = AUCTION_AUCTION,
+        choices = SELL_TYPES,
+        default = SELL_AUCTION,
         max_length = 16,
+    )
+
+    begin_time = models.DateTimeField(
+        '开始时间',
+        null = True,
+        default = None,
+    )
+
+    end_time = models.DateTimeField(
+        '结束时间',
+        null = True,
+        default = None,
+    )
+
+    bid_time = models.IntegerField(
+        '参拍次数',
+        default = 0,
     )
 
     class Meta:
@@ -70,11 +100,21 @@ class AuctionMixin(models.Model):
 
 class KongfzInstance(BaseInstance, AuctionMixin):
 
+    shop_id = models.BigIntegerField(
+        '商店ID',
+        default = 0,
+    )
+
     class Meta:
         verbose_name_plural = '空夫子列表'
         ordering = ['-put_on_date']
 
 class ZhaoInstance(BaseInstance, AuctionMixin):
+
+    item_id = models.BigIntegerField(
+        '赵涌内部ID',
+        default = 0,
+    )
 
     class Meta:
         verbose_name_plural = '赵勇列表'

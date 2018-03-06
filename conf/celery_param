@@ -7,3 +7,5 @@ CELERYD_LOG_FILE="/home/wangjing/opt/walker/log/celery_%n.log"
 CELERYD_LOG_LEVEL="DEBUG"
 CELERYD_BEAT_PID_FILE="/home/wangjing/opt/walker/var/celery_beat.pid"
 CELERYD_BEAT_LOG_FILE="/home/wangjing/opt/walker/log/celery_beat.log"
+
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/data07/home/wangjing/opt/python/lib

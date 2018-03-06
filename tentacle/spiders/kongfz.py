@@ -104,10 +104,13 @@ class KongfzSpider(scrapy.Spider):
             item['source_id'] = it['id']
             item['image_url'] = it['smallImg']
             item['is_auction'] = is_auction
+            item['shop_id'] = it['shopId']
             if is_auction:
                 item['price'] = float(it['beginPrice'])
                 item['reference'] = 'http://m.kongfz.cn/{}'.format(it['id'])
                 item['put_on_date'] = datetime.fromtimestamp(it['beginTime'])
+                item['begin_time'] = datetime.fromtimestamp(it['beginTime'])
+                item['end_time'] = datetime.fromtimestamp(it['endTime'])
             else:
                 item['price'] = float(it['price'])
                 item['reference'] = 'http://book.kongfz.com/{}/{}/'.format(it['shopId'], it['id'])

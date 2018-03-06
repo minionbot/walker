@@ -40,6 +40,11 @@ app.conf.beat_schedule = {
         'schedule': 60.0 * 60,
         'args': ()
     },
+    'watch-kongfz-every-15-minute': {
+        'task': 'octopus.tasks.kongfz_auction_watcher',
+        'schedule': 60.0 * 15,
+        'args': ()
+    }
 }
 
 @app.task(bind=True)
