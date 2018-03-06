@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import scrapy
 import json
 
-from octopus.collect.models import KongfzInstance
+from octopus.collect.models import KongfzInstance, SELL_AUCTION, SELL_SELLING
 from tentacle.items import KongfzInstanceItem
 from tentacle.conf import SEARCHES
 
@@ -104,6 +104,7 @@ class KongfzSpider(scrapy.Spider):
             item['source_id'] = it['id']
             item['image_url'] = it['smallImg']
             item['is_auction'] = is_auction
+            item['stage'] = SELL_AUCTION if is_auction else SELL_SELLING
             item['shop_id'] = it['shopId']
             if is_auction:
                 item['price'] = float(it['beginPrice'])
