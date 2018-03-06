@@ -62,3 +62,5 @@ def kongfz_retail_watcher(self):
             'shop_id': instance.shop_id,
             'source_id': instance.source_id
         }, count_down = random.randint(0, 300))
+
+
