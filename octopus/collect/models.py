@@ -119,6 +119,7 @@ class ZhaoInstance(BaseInstance, AuctionMixin):
     class Meta:
         verbose_name_plural = '赵勇列表'
         ordering = ['-put_on_date']
+        unique_together = (('item_id', 'source_id'),)
 
 class QQBBInstance(BaseInstance, AuctionMixin):
     
