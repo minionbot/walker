@@ -106,6 +106,7 @@ class KongfzSpider(scrapy.Spider):
             item['is_auction'] = is_auction
             item['stage'] = SELL_AUCTION if is_auction else SELL_SELLING
             item['shop_id'] = it['shopId']
+            item['search_key'] = search
             if is_auction:
                 item['price'] = float(it['beginPrice'])
                 item['reference'] = 'http://m.kongfz.cn/{}'.format(it['id'])

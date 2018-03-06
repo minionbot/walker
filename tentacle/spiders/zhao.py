@@ -86,6 +86,7 @@ class ZhaoSpider(scrapy.Spider):
             item['put_on_date'] = it['startAt']
             item['begin_time'] = it['startAt']
             item['stage'] = action_type
+            item['search_key'] = search
 
             instance = item.save()
             all_imported = False

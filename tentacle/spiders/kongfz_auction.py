@@ -7,12 +7,10 @@ from __future__ import unicode_literals
 import logging
 
 import scrapy
-from tentacle.items import KongfzInstanceItem, KongfzInstance
-from octopus.collect.models import SELL_ENDED, SELL_AUCTION
-
 from scrapy_splash import SplashRequest
 
-from django.utils.timezone import datetime
+from octopus.collect.models import SELL_ENDED, SELL_AUCTION
+from tentacle.items import KongfzInstance
 
 logger = logging.getLogger('scrapy')
 
@@ -20,8 +18,7 @@ class KongfzAuctionSpider(scrapy.Spider):
     name = 'kongfz_auction'
     root = 'http://m.kongfz.cn/{auction_id}'
 
-    def __init__(self, auction_id, mode = 'update', **kwargs):
-        self.mode = mode
+    def __init__(self, auction_id, **kwargs):
         self.auction_id = auction_id
         super(KongfzAuctionSpider).__init__(**kwargs)
 
