@@ -25,18 +25,22 @@ class KongfzAuctionDetail(BaseTask):
     abstract = False
     name = 'octopus.tasks.kongfz_auction_detail'
 
-    def __init__(self, auction_id):
-        self.auction_id = auction_id
-
     def build_args(self, **kwargs):
-        return ['scrapy', 'crawl', 'kongfz_auction_detail', '-a',
-                'auction_id=%s' % self.auction_id]
+        auction_id = kwargs['auction_id']
+        return ['scrapy', 'crawl', 'kongfz_auction', '-a',
+                'auction_id=%s' % auction_id]
+
+
+app.register_task(KongfzAuctionDetail())
+
 
 @app.task(bind = True, name = 'octopus.tasks.kongfz_auction_watcher')
 def kongfz_auction_watcher(self):
     for instance in KongfzInstance.objects.filter(is_auction = True):
-        task = KongfzAuctionDetail(instance.source_id)
-        task.apply_async(count_down = random.randint(0, 300))
+        task = KongfzAuctionDetail()
+        task.apply_async(kwargs = {
+            'auction_id': instance.source_id
+        }, count_down = random.randint(0, 300))
 
 @app.task(bind = True, name = 'kongfz_sell_watcher')
 def kongfz_sell_watcher(self):
