@@ -20,6 +20,14 @@ class KongfzRetailSpider(scrapy.Spider):
         super(KongfzRetailSpider).__init__(**kwargs)
 
     def start_requests(self):
+
+        try:
+            instance = KongfzInstance.objects.get(source_id = self.source_id, shop_id = self.shop_id)
+            if instance.stage == SELL_ENDED:
+                return {}
+        except KongfzInstance.DoesNotExist:
+            pass
+
         return [scrapy.FormRequest(
             url = self.root,
             formdata = {
