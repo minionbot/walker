@@ -8,7 +8,7 @@ import json
 
 import scrapy
 
-from django.utils.timezone import datetime
+from django.utils.timezone import datetime, timedelta
 from octopus.collect.models import KongfzInstance, SELL_ENDED, SELL_SELLING
 
 class KongfzRetailSpider(scrapy.Spider):
@@ -30,7 +30,7 @@ class KongfzRetailSpider(scrapy.Spider):
             if instance.stage == SELL_ENDED:
                 return {}
         except KongfzInstance.DoesNotExist:
-            pass
+            return {}
 
         return [scrapy.FormRequest(
             url = self.root,
@@ -49,8 +49,9 @@ class KongfzRetailSpider(scrapy.Spider):
         instance.stage = SELL_SELLING if body['sold'] == 0 else SELL_ENDED
         instance.price = body['price']
         instance.reference = body['url'] if body['url'].strip() else instance.reference
+        instance.next_query_date = instance.next_query_date + timedelta(days = 1)
 
-        instance.save(update_fields = ['stage', 'price', 'reference'])
+        instance.save(update_fields = ['stage', 'price', 'reference', 'next_query_date'])
 
         return {
             'sold': body['sold'],
