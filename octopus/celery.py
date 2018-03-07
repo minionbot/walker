@@ -55,7 +55,7 @@ app.conf.beat_schedule = {
         'schedule': 60.0 * 60 * 6,
         'args': ()
     },
-    'watch-kongfz-retail-every-15-minute': {
+    'watch-kongfz-auction-every-15-minute': {
         'task': 'octopus.tasks.zhao_auction_watcher',
         'schedule': 60.0 * 15,
         'args': ()
