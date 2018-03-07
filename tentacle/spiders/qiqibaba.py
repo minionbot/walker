@@ -99,8 +99,8 @@ class QiQiBaBaSpider(scrapy.Spider):
 
     def start_requests(self):
         requests = []
-        for word in SEARCHES:
-            search = ' '.join(word)
+        for search in SEARCHES:
+            # search = ' '.join(word)
             requests.extend([
                 self.get_request(search.strip(), 1),
             ])
