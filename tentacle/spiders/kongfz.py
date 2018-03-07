@@ -105,7 +105,7 @@ class KongfzSpider(scrapy.Spider):
             item['image_url'] = it['smallImg']
             item['is_auction'] = is_auction
             item['stage'] = SELL_AUCTION if is_auction else SELL_SELLING
-            item['shop_id'] = it['shopId']
+            item['shop_id'] = it['shopId'] if not is_auction else 0
             item['search_key'] = search
             if is_auction:
                 item['price'] = float(it['beginPrice'])
