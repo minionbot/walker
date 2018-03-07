@@ -8,7 +8,7 @@ from slackclient import SlackClient
 from octopus.celery import app
 
 @app.task(name = 'octopus.tasks.send_slack')
-def send_slack(channel, name, image_url, reference):
+def send_slack(channel, name, image_url, reference, price):
     slack_token = settings.SLACK_API_TOKEN
     sc = SlackClient(slack_token)
 
@@ -22,7 +22,7 @@ def send_slack(channel, name, image_url, reference):
             # "author_name": "Bobby Tables",
             # "author_link": "http://flickr.com/bobby/",
             # "author_icon": "http://flickr.com/icons/bobby.jpg",
-            "title": name,
+            "title": '[%s] %s' % (price, name),
             "title_link": reference,
             # "text": "Optional text that appears within the attachment",
             "image_url": image_url,

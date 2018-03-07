@@ -122,6 +122,11 @@ class ZhaoInstance(BaseInstance, AuctionMixin):
         unique_together = (('item_id', 'source_id'),)
 
 class QQBBInstance(BaseInstance, AuctionMixin):
+
+    shop_id = models.BigIntegerField(
+        '商店ID',
+        default = 0,
+    )
     
     class Meta:
         verbose_name_plural = '七七八八'

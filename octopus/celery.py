@@ -40,6 +40,11 @@ app.conf.beat_schedule = {
         'schedule': 60.0 * 60,
         'args': ()
     },
+    'search-qqbb-every-one-hour': {
+        'task': 'octopus.tasks.qqbb_search',
+        'schedule': 60.0 * 60,
+        'args': ()
+    },
     'watch-kongfz-auction-every-1-hour': {
         'task': 'octopus.tasks.kongfz_auction_watcher',
         'schedule': 60.0 * 60,

@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.utils.html import format_html_join, format_html
 
 # Register your models here.
-from .models import KongfzInstance, ZhaoInstance
+from .models import KongfzInstance, ZhaoInstance, QQBBInstance
 
 import xadmin
 
@@ -34,3 +34,10 @@ class ZhaoInstanceAdmin(KongfzInstanceAdmin):
 
 
 xadmin.site.register(ZhaoInstance, ZhaoInstanceAdmin)
+
+
+class QQBBInstanceAdmin(KongfzInstanceAdmin):
+    pass
+
+
+xadmin.site.register(QQBBInstance, QQBBInstanceAdmin)

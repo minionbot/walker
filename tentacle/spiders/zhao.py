@@ -76,7 +76,7 @@ class ZhaoSpider(scrapy.Spider):
         all_imported = True
 
         for it in body['list']:
-            if it['auctionNo'] in self.imported_instances:
+            if int(it['auctionNo']) in self.imported_instances:
                 continue
 
             # save item
