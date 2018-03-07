@@ -191,7 +191,7 @@ class QiQiBaBaSpider(scrapy.Spider):
             instance['shop_id'] = shop_id
             instance['stage'] = SELL_AUCTION if is_auction else SELL_SELLING
             instance['search_key'] = search
-            instance['pub_on_date'] = datetime.now()
+            instance['put_on_date'] = datetime.now()
             instance.save()
 
         if page < self.page_limit[search] and not imported:
