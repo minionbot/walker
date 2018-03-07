@@ -45,6 +45,11 @@ class BaseInstance(BaseModel, PolymorphicModel):
         max_length = 64,
     )
 
+    next_query_date = models.DateField(
+        '下一次检索日期',
+        default = None,
+    )
+
 
 SELL_PREVIEW = '预览中'
 SELL_AUCTION = '拍卖中'

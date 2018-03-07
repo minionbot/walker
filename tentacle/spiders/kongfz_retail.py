@@ -8,6 +8,7 @@ import json
 
 import scrapy
 
+from django.utils.timezone import datetime
 from octopus.collect.models import KongfzInstance, SELL_ENDED, SELL_SELLING
 
 class KongfzRetailSpider(scrapy.Spider):
@@ -20,9 +21,12 @@ class KongfzRetailSpider(scrapy.Spider):
         super(KongfzRetailSpider).__init__(**kwargs)
 
     def start_requests(self):
-
         try:
-            instance = KongfzInstance.objects.get(source_id = self.source_id, shop_id = self.shop_id)
+            instance = KongfzInstance.objects.get(
+                source_id = self.source_id,
+                shop_id = self.shop_id,
+                next_query_date = datetime.today()
+            )
             if instance.stage == SELL_ENDED:
                 return {}
         except KongfzInstance.DoesNotExist:

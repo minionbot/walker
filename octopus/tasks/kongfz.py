@@ -6,6 +6,8 @@ from __future__ import unicode_literals
 
 import random
 
+from django.db.models import Q
+from django.utils.timezone import datetime
 from .base import BaseTask
 from octopus.celery import app
 from octopus.collect.models import KongfzInstance, SELL_ENDED
@@ -56,7 +58,8 @@ def kongfz_auction_watcher(self):
 
 @app.task(bind = True, name = 'octopus.tasks.kongfz_retail_watcher')
 def kongfz_retail_watcher(self):
-    for instance in KongfzInstance.objects.filter(is_auction = False).exclude(stage = SELL_ENDED):
+    for instance in KongfzInstance.objects.filter(
+            Q(is_auction = False) & ~Q(stage = SELL_ENDED) & Q(next_query_date = datetime.today())):
         task = KongfzRetailDetail()
         task.apply_async(kwargs = {
             'shop_id': instance.shop_id,
