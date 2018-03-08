@@ -4,19 +4,17 @@
 
 from __future__ import unicode_literals
 
-import re
-import itertools
 import logging
+import re
 
-from octopus.collect.models import QQBBInstance, SELL_AUCTION, SELL_SELLING
-from tentacle.items import QQBBInstanceItem
+import scrapy
+from django.utils.timezone import datetime
 from scrapy_splash import SplashFormRequest as BasicSplashFormRequest
 from scrapy_splash import SplashRequest
 
-from cached_property import cached_property
-import scrapy
-
-from django.utils.timezone import datetime
+from octopus.collect.models import QQBBInstance, SELL_AUCTION, SELL_SELLING
+from tentacle.items import QQBBInstanceItem
+from tentacle.spiders.base import BaseSpider
 
 logger = logging.getLogger('scrapy')
 
@@ -88,10 +86,11 @@ class SplashFormRequest(BasicSplashFormRequest):
             self, url=url, callback=callback, method=method, body=body,
             **kwargs)
 
-class QiQiBaBaSpider(scrapy.Spider):
+class QiQiBaBaSpider(BaseSpider):
     name = 'qqbb'
     page_limit = {}
     root = 'https://m.997788.com'
+    model = QQBBInstance
 
     def __init__(self, mode = 'update', **kwargs):
         self.mode = mode
@@ -106,10 +105,6 @@ class QiQiBaBaSpider(scrapy.Spider):
             ])
 
         return requests
-
-    @cached_property
-    def imported_instances(self):
-        return QQBBInstance.objects.values_list('source_id', flat = True).order_by('-source_id')
 
     def get_request(self, key, page):
         return SplashFormRequest(
@@ -160,7 +155,7 @@ class QiQiBaBaSpider(scrapy.Spider):
                 is_auction = True
 
             source_id = int(title_fields[1][2:])
-            if source_id in self.imported_instances:
+            if source_id in self.imported_instances():
                 continue
 
             title = title_fields[0]
@@ -191,6 +186,8 @@ class QiQiBaBaSpider(scrapy.Spider):
             instance['search_key'] = search
             instance['put_on_date'] = datetime.now()
             instance.save()
+
+            self.ids.add(int(instance['source_id']))
 
         if page < self.page_limit[search] and not imported:
             yield self.get_request(search, page + 1)

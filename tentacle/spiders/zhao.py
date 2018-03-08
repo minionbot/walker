@@ -3,21 +3,22 @@
 # Wangjing (wangjild@gmail.com)
 
 from __future__ import unicode_literals
-import scrapy
+
 import json
 
+import scrapy
 from django.utils.timezone import datetime
-from octopus.collect.models import ZhaoInstance, SELL_AUCTION, SELL_ENDED, SELL_PREVIEW
-from tentacle.items import ZhaoInstanceItem
-from tentacle.conf import SEARCHES
 
-from cached_property import cached_property
+from octopus.collect.models import ZhaoInstance, SELL_AUCTION, SELL_ENDED, SELL_PREVIEW
+from tentacle.conf import SEARCHES
+from tentacle.items import ZhaoInstanceItem
+from tentacle.spiders.base import BaseSpider
 
 ZHAO_PREVIEW = '1'
 ZHAO_AUCTION = '2'
 ZHAO_ENDED = '3'
 
-class ZhaoSpider(scrapy.Spider):
+class ZhaoSpider(BaseSpider):
     name = 'zhao'
 
     def __init__(self, mode = 'update', **kwargs):
@@ -33,10 +34,6 @@ class ZhaoSpider(scrapy.Spider):
             ])
 
         return requests
-
-    @cached_property
-    def imported_instances(self):
-        return ZhaoInstance.objects.values_list('source_id', flat = True).order_by('-source_id')
 
     def get_auction_request(self, key, page):
         return self._get_request(key = key, page = page, stage = ZHAO_AUCTION)
@@ -77,7 +74,7 @@ class ZhaoSpider(scrapy.Spider):
         all_imported = True
 
         for it in body['list']:
-            if int(it['auctionNo']) in self.imported_instances:
+            if int(it['auctionNo']) in self.imported_instances():
                 continue
 
             # save item
@@ -94,6 +91,8 @@ class ZhaoSpider(scrapy.Spider):
             item['search_key'] = search
 
             instance = item.save()
+            self.ids.add(int(instance['source_id']))
+
             all_imported = False
 
         if self.mode == 'init' or not all_imported:

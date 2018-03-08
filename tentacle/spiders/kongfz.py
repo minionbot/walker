@@ -3,20 +3,21 @@
 # Wangjing (wangjild@gmail.com)
 
 from __future__ import unicode_literals
-import scrapy
+
 import json
 
-from octopus.collect.models import KongfzInstance, SELL_AUCTION, SELL_SELLING
-from tentacle.items import KongfzInstanceItem
-from tentacle.conf import SEARCHES
-
-from cached_property import cached_property
-
+import scrapy
 from django.utils.timezone import datetime
 
+from octopus.collect.models import KongfzInstance, SELL_AUCTION, SELL_SELLING
+from tentacle.conf import SEARCHES
+from tentacle.items import KongfzInstanceItem
+from tentacle.spiders.base import BaseSpider
 
-class KongfzSpider(scrapy.Spider):
+class KongfzSpider(BaseSpider):
     name = 'kongfz'
+    ids = set()
+    model = KongfzInstance
 
     def __init__(self, mode = 'update', **kwargs):
         self.mode = mode
@@ -31,10 +32,6 @@ class KongfzSpider(scrapy.Spider):
             ])
 
         return requests
-
-    @cached_property
-    def imported_instances(self):
-        return KongfzInstance.objects.values_list('source_id', flat = True).order_by('-source_id')
 
     def get_sell_request(self, key, page):
         return scrapy.FormRequest(
@@ -95,7 +92,7 @@ class KongfzSpider(scrapy.Spider):
         is_auction = 'searchAuction' in response._get_url()
 
         for it in body['list']:
-            if it['id'] in self.imported_instances:
+            if it['id'] in self.imported_instances():
                 continue
 
             # save item
@@ -117,7 +114,9 @@ class KongfzSpider(scrapy.Spider):
                 item['price'] = float(it['price'])
                 item['reference'] = 'http://book.kongfz.com/{}/{}/'.format(it['shopId'], it['id'])
                 item['put_on_date'] = it['date']
-            instance = item.save()
+
+            self.ids.add(int(item['source_id']))
+
             imported = False
 
         if self.mode == 'init' or not imported:
