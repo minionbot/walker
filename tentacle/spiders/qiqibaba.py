@@ -97,6 +97,7 @@ class QiQiBaBaSpider(BaseSpider):
         super(QiQiBaBaSpider).__init__(**kwargs)
 
     def start_requests(self):
+        # return [self._debug_request()]
         requests = []
         for search in SEARCHES:
             # search = ' '.join(word)
@@ -164,8 +165,9 @@ class QiQiBaBaSpider(BaseSpider):
             reference = date.css('tbody tr td')[0].css('a::attr(href)').extract_first()
             reference = self.root + reference
 
-            click = date.css('div.art_1>div.art_2>a')[1].css('a::attr(onclick)').extract_first()
+            click = date.css('div.art_1>div.art_2>a')[-1].css('a::attr(onclick)').extract_first()
             click = click.replace('this.href=', '')
+
             click = click.strip("'").strip('/')
             shop_id = click.split('/')[0]
 
