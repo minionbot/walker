@@ -141,9 +141,9 @@ class QiQiBaBaSpider(BaseSpider):
         imported = True
 
         items = response.css('#body #both table.tbc.tbc_old')
-        for item in items:
+        for date in items:
 
-            detail_fields = item.css('tbody tr td')[1]
+            detail_fields = date.css('tbody tr td')[1]
             title_fields = detail_fields.css('p>a::attr(title)').extract_first().rsplit('-', 1)
             if len(title_fields) != 2:
                 logger.error('can not parse title from qqbb', extra = {
@@ -160,34 +160,34 @@ class QiQiBaBaSpider(BaseSpider):
 
             title = title_fields[0]
 
-            image_url = item.css('tbody tr td')[0].css('a img::attr(src)').extract_first()
-            reference = item.css('tbody tr td')[0].css('a::attr(href)').extract_first()
+            image_url = date.css('tbody tr td')[0].css('a img::attr(src)').extract_first()
+            reference = date.css('tbody tr td')[0].css('a::attr(href)').extract_first()
             reference = self.root + reference
 
-            click = item.css('div.art_1>div.art_2>a')[1].css('a::attr(onclick)').extract_first()
+            click = date.css('div.art_1>div.art_2>a')[1].css('a::attr(onclick)').extract_first()
             click = click.replace('this.href=', '')
             click = click.strip("'").strip('/')
             shop_id = click.split('/')[0]
 
-            price = item.css('div.art_1>div.art_3>.font_price::text').extract_first()
+            price = date.css('div.art_1>div.art_3>.font_price::text').extract_first()
             price = price.strip('￥')
 
             imported = False
 
-            instance = QQBBInstanceItem()
-            instance['name'] = title
-            instance['is_auction'] = is_auction
-            instance['source_id'] = source_id
-            instance['image_url'] = image_url
-            instance['reference'] = reference
-            instance['price'] = price
-            instance['shop_id'] = shop_id
-            instance['stage'] = SELL_AUCTION if is_auction else SELL_SELLING
-            instance['search_key'] = search
-            instance['put_on_date'] = datetime.now()
-            instance.save()
+            item = QQBBInstanceItem()
+            item['name'] = title
+            item['is_auction'] = is_auction
+            item['source_id'] = source_id
+            item['image_url'] = image_url
+            item['reference'] = reference
+            item['price'] = price
+            item['shop_id'] = shop_id
+            item['stage'] = SELL_AUCTION if is_auction else SELL_SELLING
+            item['search_key'] = search
+            item['put_on_date'] = datetime.now()
+            item.save()
 
-            self.ids.add(int(instance['source_id']))
+            self.ids.add(int(item['source_id']))
 
         if page < self.page_limit[search] and not imported:
             yield self.get_request(search, page + 1)

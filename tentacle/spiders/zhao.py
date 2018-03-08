@@ -92,7 +92,7 @@ class ZhaoSpider(BaseSpider):
             item['search_key'] = search
 
             instance = item.save()
-            self.ids.add(int(instance['source_id']))
+            self.ids.add(int(item['source_id']))
 
             all_imported = False
 
