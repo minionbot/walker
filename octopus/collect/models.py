@@ -65,7 +65,7 @@ class BaseInstance(BaseModel, PolymorphicModel):
             if 'next_query_date' not in update_fields:
                 update_fields.append('next_query_date')
 
-        super(BaseModel, self).save(*args, **kwargs)
+        super(BaseInstance, self).save(*args, **kwargs)
 
 
 SELL_PREVIEW = '预览中'
