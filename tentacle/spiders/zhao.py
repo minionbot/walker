@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import scrapy
 import json
 
+from django.utils.timezone import datetime
 from octopus.collect.models import ZhaoInstance, SELL_AUCTION, SELL_ENDED, SELL_PREVIEW
 from tentacle.items import ZhaoInstanceItem
 from tentacle.conf import SEARCHES
@@ -87,8 +88,8 @@ class ZhaoSpider(scrapy.Spider):
             item['image_url'] = it['images'][0]['url']
             item['price'] = float(it['price'] + it['serviceFee'])
             item['reference'] = 'http://www.zhaoonline.com/xinzhongguofengpianjian/{}.shtml'.format(it['id'])
-            item['put_on_date'] = it['startAt']
-            item['begin_time'] = it['startAt']
+            item['put_on_date'] = it.get('startAt', datetime.now())
+            item['begin_time'] = item['put_on_date']
             item['stage'] = action_type
             item['search_key'] = search
 
