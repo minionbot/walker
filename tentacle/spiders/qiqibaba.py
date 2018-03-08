@@ -97,7 +97,7 @@ class QiQiBaBaSpider(BaseSpider):
         super(QiQiBaBaSpider).__init__(**kwargs)
 
     def start_requests(self):
-        # return [self._debug_request()]
+
         requests = []
         for search in SEARCHES:
             # search = ' '.join(word)
@@ -173,6 +173,7 @@ class QiQiBaBaSpider(BaseSpider):
 
             price = date.css('div.art_1>div.art_3>.font_price::text').extract_first()
             price = price.strip('￥')
+            price = price.replace(',', '')
 
             imported = False
 
