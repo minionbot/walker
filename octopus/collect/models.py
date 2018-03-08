@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils.timezone import now, timedelta
 from polymorphic.models import PolymorphicModel
 from octopus.main.models.base import BaseModel
 
@@ -48,7 +49,23 @@ class BaseInstance(BaseModel, PolymorphicModel):
     next_query_date = models.DateField(
         '下一次检索日期',
         default = None,
+        null = True
     )
+
+    def save(self, *args, **kwargs):
+        update_fields = kwargs.get('update_fields', [])
+
+        if not self.pk and not self.put_on_date:
+            self.put_on_date = now()
+            if 'put_on_date' not in update_fields:
+                update_fields.append('put_on_date')
+
+        if 'next_query_date' not in update_fields or not self.next_query_date:
+            self.next_query_date = now() + timedelta(days = 1)
+            if 'next_query_date' not in update_fields:
+                update_fields.append('next_query_date')
+
+        super(BaseModel, self).save(*args, **kwargs)
 
 
 SELL_PREVIEW = '预览中'
