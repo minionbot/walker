@@ -20,6 +20,7 @@ ZHAO_ENDED = '3'
 
 class ZhaoSpider(BaseSpider):
     name = 'zhao'
+    model = ZhaoInstance
 
     def __init__(self, mode = 'update', **kwargs):
         self.mode = mode
