@@ -13,7 +13,7 @@ class BaseInstance(BaseModel, PolymorphicModel):
 
     name = models.CharField(
         '商品名称',
-        max_length = 256,
+        max_length = 512,
     )
 
     price = models.FloatField(
