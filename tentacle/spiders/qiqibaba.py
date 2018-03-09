@@ -23,6 +23,10 @@ from tentacle.conf import SEARCHES
 # no need for append suffix
 SEARCHES = SEARCHES
 
+BLACK_SHOP = [
+    33068
+]
+
 class SplashFormRequest(BasicSplashFormRequest):
 
     def __init__(self, url=None, callback=None, method=None, formdata=None,
@@ -119,11 +123,13 @@ class QiQiBaBaSpider(BaseSpider):
             click = click.replace('this.href=', '')
 
             click = click.strip("'").strip('/')
-            shop_id = click.split('/')[0]
+            shop_id = int(click.split('/')[0])
+            if shop_id in BLACK_SHOP:
+                continue
 
             price = date.css('div.art_1>div.art_3>.font_price::text').extract_first()
             price = price.strip('￥')
-            price = price.replace(',', '')
+            price = float(price.replace(',', ''))
 
             imported = False
 

@@ -38,7 +38,7 @@ xadmin.site.register(ZhaoInstance, ZhaoInstanceAdmin)
 
 
 class QQBBInstanceAdmin(KongfzInstanceAdmin):
-    search_fields = KongfzInstanceAdmin.search_fields + ('shop_id',) 
+    search_fields = KongfzInstanceAdmin.search_fields + ('shop_id',)
     pass
 
 
