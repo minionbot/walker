@@ -18,10 +18,10 @@ from tentacle.spiders.base import BaseSpider
 
 logger = logging.getLogger('scrapy')
 
-from tentacle.conf import KEYS
+from tentacle.conf import SEARCHES
 
 # no need for append suffix
-SEARCHES = KEYS
+SEARCHES = SEARCHES
 
 class SplashFormRequest(BasicSplashFormRequest):
 
