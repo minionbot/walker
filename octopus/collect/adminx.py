@@ -13,7 +13,7 @@ import xadmin
 class KongfzInstanceAdmin(object):
 
     list_display = ('name', 'price', 'search_key', 'stage', 'date', 'image', )
-    search_fields = ['name', 'search_key']
+    search_fields = ('name', 'search_key')
 
     def image(self, obj):
         return format_html("<a href='{}' target='_blank'><img src='{}' width='160' /></a>".format(
@@ -38,6 +38,7 @@ xadmin.site.register(ZhaoInstance, ZhaoInstanceAdmin)
 
 
 class QQBBInstanceAdmin(KongfzInstanceAdmin):
+    search_fields = KongfzInstanceAdmin.search_fields + ('shop_id',) 
     pass
 
 
