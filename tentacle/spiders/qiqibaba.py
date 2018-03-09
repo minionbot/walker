@@ -18,58 +18,9 @@ from tentacle.spiders.base import BaseSpider
 
 logger = logging.getLogger('scrapy')
 
-KEYS = [
-    '原地 寄',
-    '原地封',
-    't3', '户县',
-    't4', '大庆',
-    't5', '大寨',
-    't11', '韶山',
-    't74', '辽塑',
-    't82', '西厢',
-    't84', '黄帝陵',
-    't89', '簪花仕女图',
-    't89m',
-    't96', '拙政园',
-    't99', '牡丹亭',
-    't99m',
-    't100', '峨眉山',
-    't103', '梅花', '梅园',
-    't103m',
-    't104', '花灯',
-    't108', '航天',
-    't110', '白鹤',
-    't110m',
-    't116', '壁画', '敦煌',
-    't121', '名楼',
-    't129', '兰花',
-    't130', '泰山',
-    't131', '三国',
-    't132', '麋鹿',
-    't137', '儿童生活',
-    't138', '水浒',
-    't140', '华山',
-    't141', '美术作品',
-    't143', '火箭',
-    't144', '西湖',
-    't150',
-    't151', '铜马车',
-    't155', '衡山',
-    't156', '都江堰',
-    't158', '夜宴图',
-    't162', '杜鹃',
-    't163', '衡山',
-    't164', '避暑山庄', '承德'
-    't166', '瓷器', '景德镇',
-    't167',
-    '首日 寄',
-]
+from tentacle.conf import KEYS
 
-TYPES = [
-    #
-]
-
-# SEARCHES = itertools.product(KEYS, TYPES)
+# no need for append suffix
 SEARCHES = KEYS
 
 class SplashFormRequest(BasicSplashFormRequest):
@@ -100,7 +51,6 @@ class QiQiBaBaSpider(BaseSpider):
 
         requests = []
         for search in SEARCHES:
-            # search = ' '.join(word)
             requests.extend([
                 self.get_request(search.strip(), 1),
             ])
