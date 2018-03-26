@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html_join, format_html
 
 # Register your models here.
-from .models import StampGroupCatalog
+from .models import StampGroupCatalog, StampSingleCatalog
 
 import xadmin
 
@@ -30,3 +30,20 @@ class StampCatalogAdmin(object):
 
 
 xadmin.site.register(StampGroupCatalog, StampCatalogAdmin)
+
+class StampSingleCatalogAdmin(object):
+
+    def official(self, obj):
+        return obj.group.official
+
+    official.short_description = '志号'
+
+    def name(self, obj):
+        return obj.group.name
+    name.short_description = '套票名'
+
+    fields = get_model_fields(StampSingleCatalog)
+    list_display = ("official", "name",
+                    "sequence", "sequence_name", "pub_number", "face_value", "pub_date")
+
+xadmin.site.register(StampSingleCatalog, StampSingleCatalogAdmin)

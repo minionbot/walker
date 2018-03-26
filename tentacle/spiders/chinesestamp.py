@@ -8,10 +8,10 @@ class ChinesestampSpider(scrapy.Spider):
     name = 'chinesestamp'
     allowed_domains = ['www.chinesestamp.cn']
     start_urls = [
-        'http://www.chinesestamp.cn/j',
-        'http://www.chinesestamp.cn/t',
-        #'http://www.chinesestamp.cn/ji',
-        #'http://www.chinesestamp.cn/te',
+        # 'http://www.chinesestamp.cn/j',
+        # 'http://www.chinesestamp.cn/t',
+        'http://www.chinesestamp.cn/ji',
+        # 'http://www.chinesestamp.cn/te',
     ]
 
     def parse(self, response):
@@ -32,6 +32,13 @@ class ChinesestampSpider(scrapy.Spider):
             pub_date, group_num, results = self.parse_j_stamp_content(contents, name.strip(), official)
         elif 'T' in official:
             pub_date, group_num, results = self.parse_t_stamp_content(contents, name.strip(), official)
+        elif official.startswith('纪'):
+            number = int(official.strip('纪').strip('M').strip())
+            if number <= 13:
+                return {}
+            pub_date, group_num, results = self.parse_c_stamp_content(contents, name.strip(), official)
+        elif official.startswith('特'):
+            pub_date, group_num, results = self.parse_c_stamp_content(contents, name.strip(), official)
 
         image_url = response.css('div#contents .post_content p a::attr(href)').extract_first()
         if image_url is None:
@@ -155,14 +162,14 @@ class ChinesestampSpider(scrapy.Spider):
             } for idx, match in enumerate(matches)]
 
         patterns = (
-            (r'（(\d{1,2})）\W*?(\d{1,2})[\u4e00-\u9fa5]+\W+([\u4e00-\u9fa5]+)\W+[\D]*?(\d{1,5}(\.\d{1,3})?)',
+            (r'（(\d{1,3})）\W*?(\d{1,3})[\u4e00-\u9fa5]+\W+([\u4e00-\u9fa5]+)\W+[\D]*?(\d{1,5}(\.\d{1,3})?)',
              get_match_1),
-            (r'（(\d{1,2})）\W*?([\u4e00-\u9fa5]+)\W+[\D]*?(\d{1,2})[\u4e00-\u9fa5]+\W+(\d{1,5}(\.\d{1,3})?)',
+            (r'（(\d{1,3})）\W*?([\u4e00-\u9fa5]+)\W+[\D]*?(\d{1,2})[\u4e00-\u9fa5]+\W+(\d{1,5}(\.\d{1,3})?)',
              get_match_2),
-            (r'（(\d{1,2})）\W*?(\d{1}\+\d{1})[\u4e00-\u9fa5]+\W+([\u4e00-\u9fa5]+)\W+[\D]*?(\d{1,5}(\.\d{1,'
+            (r'（(\d{1,3})）\W*?(\d{1}\+\d{1})[\u4e00-\u9fa5]+\W+([\u4e00-\u9fa5]+)\W+[\D]*?(\d{1,5}(\.\d{1,'
              r'3})?)',
              get_match_3
-             ), # 匹配儿童生活
+             ),  # 匹配儿童生活
             (r'（\d{1,2}-(\d{1,2})）\W*?[\u4e00-\u9fa5]+\W+([\u4e00-\u9fa5]+)\W+[\D]*?(\d{1,5}(\.\d{1,3})?)',
              get_match_4
              ),
@@ -188,3 +195,15 @@ class ChinesestampSpider(scrapy.Spider):
             results = [{'sequence': 1, 'sequence_name': name}]
 
         return pub_date.replace('.', '-'), len(results), results
+
+    def parse_c_stamp_content(self, contents, name, official):
+        return self.parse_t_stamp_content(contents, name, official)
+
+    def parse_date(self, contents):
+        # find publish date
+        pub_date = ''
+        match = re.search(r'\d{4}\.\d{1,2}\.\d{1,2}', contents)
+        if match:
+            pub_date = match.group(0)
+
+        return pub_date

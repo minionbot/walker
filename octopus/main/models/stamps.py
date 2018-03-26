@@ -70,6 +70,9 @@ class StampSingleCatalog(BaseModel):
         default = ''
     )
 
+    class Meta:
+        verbose_name_plural = '单枚目录'
+
 
 class StampGroupCatalog(BaseModel):
 
@@ -136,8 +139,11 @@ class StampGroupCatalog(BaseModel):
     #    choices = PRINT_CHOICES
     # )
 
+    def __str__(self):
+        return '%s - %s' % (self.official, self.name)
+
     class Meta:
-        verbose_name_plural = '邮票目录'
+        verbose_name_plural = '套票目录'
 
 
 class Stamp(BaseModel):
