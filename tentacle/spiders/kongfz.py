@@ -12,7 +12,7 @@ from django.utils.timezone import datetime
 from octopus.collect.models import KongfzInstance, SELL_AUCTION, SELL_SELLING
 from tentacle.conf import SEARCHES
 from tentacle.items import KongfzInstanceItem
-from tentacle.spiders.base import BaseSpider, SplashFormRequest
+from tentacle.spiders.base import BaseSpider
 
 class KongfzSpider(BaseSpider):
     name = 'kongfz'
@@ -34,10 +34,10 @@ class KongfzSpider(BaseSpider):
         return requests
 
     def get_sell_request(self, key, page):
-        return SplashFormRequest(
+        return scrapy.FormRequest(
             "https://app.kongfz.com/shop/newFilterBooks",
             formdata = {
-                'UserAgent': 'IOS_KFZ_COM_2.0.7_iPhone 7 Plus_10.3.3',
+                'UserAgent': 'IOS_KFZ_COM_2.0.12_iPhone 7 Plus_10.3.3',
                 'author': '',
                 'catId': '36',
                 'exKey': '',
