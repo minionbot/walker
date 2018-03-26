@@ -4,11 +4,8 @@
 
 from __future__ import unicode_literals
 
-import random
-
-from .base import BaseTask
-from octopus.collect.models import QQBBInstance, SELL_ENDED
 from octopus.celery import app
+from .base import BaseTask
 
 class QQBBSearch(BaseTask):
     abstract = False

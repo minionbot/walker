@@ -5,12 +5,6 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
-from octopus.setup import prepare_env
-prepare_env()
-
-import django
-django.setup()
-
 from scrapy_djangoitem import DjangoItem
 from octopus.main.models.stamps import StampGroupCatalog, StampSingleCatalog
 from octopus.collect.models import KongfzInstance, ZhaoInstance, QQBBInstance

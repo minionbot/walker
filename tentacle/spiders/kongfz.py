@@ -25,7 +25,7 @@ class KongfzSpider(BaseSpider):
 
     def start_requests(self):
         requests = []
-        for word in SEARCHES:
+        for word in reversed(SEARCHES):
             requests.extend([
                 self.get_sell_request(word, 1),
                 self.get_auction_request(word, 1)
@@ -59,7 +59,11 @@ class KongfzSpider(BaseSpider):
             },
             meta = {
                 'page': int(page),
-                'search': str(key)
+                'search': str(key),
+                'enable_tentacle_proxy': 1
+            },
+            headers = {
+                'User-Agent': 'IOS_KFZ_COM_2.0.12_iPhone 7 Plus_10.3.3'
             }
         )
 
@@ -76,7 +80,11 @@ class KongfzSpider(BaseSpider):
             },
             meta = {
                 'page': int(page),
-                'search': str(key)
+                'search': str(key),
+                'enable_tentacle_proxy': 1
+            },
+            headers = {
+                'User-Agent': 'IOS_KFZ_COM_2.0.12_iPhone 7 Plus_10.3.3'
             }
         )
 

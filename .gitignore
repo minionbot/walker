@@ -18,3 +18,4 @@ var
 log
 
 tentacle/conf.*
+tentacle/proxies.txt
