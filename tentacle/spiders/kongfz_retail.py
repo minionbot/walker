@@ -46,7 +46,7 @@ class KongfzRetailSpider(scrapy.Spider):
         body = json.loads(response.body_as_unicode())
 
         instance = KongfzInstance.objects.get(source_id = self.source_id)
-        if body['code'] == 30001:
+        if body.get('code', 0) == 30001:
             instance.stage = SELL_ENDED
             instance.next_query_date = None
             instance.save(update_fields = ['stage', 'next_query_date'])

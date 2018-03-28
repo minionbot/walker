@@ -35,7 +35,6 @@ class QiQiBaBaSpider(BaseSpider):
         super(QiQiBaBaSpider).__init__(**kwargs)
 
     def start_requests(self):
-
         requests = []
         for search in SEARCHES:
             requests.extend([
@@ -65,8 +64,10 @@ class QiQiBaBaSpider(BaseSpider):
         page = response.meta['page']
 
         if self.page_limit.get(search, None) is None:
-            total_page_text = response.css('.showpage table tbody tr')[0].css('td')[1].css('font')[1].css('strong '
-                                                                                               'font::text').extract_first()
+            pg_tr = response.css('.showpage table tbody tr')[0]
+            pg_td = pg_tr.css('td')[1]
+            pg_font = pg_td.css('font')[1]
+            total_page_text = pg_font.css('strong font::text').extract_first()
             match = re.search(r'\D*(\d+).*', total_page_text)
             if not match:
                 yield {}
