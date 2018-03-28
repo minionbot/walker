@@ -21,7 +21,8 @@ from tentacle.conf import SEARCHES
 SEARCHES = SEARCHES
 
 BLACK_SHOP = [
-    33068
+    33068,
+    40167
 ]
 
 class QiQiBaBaSpider(BaseSpider):
