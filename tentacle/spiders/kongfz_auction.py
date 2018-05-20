@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import logging
 
 import scrapy
-from scrapy_splash import SplashRequest
 
 from octopus.collect.models import SELL_ENDED, SELL_AUCTION
 from tentacle.items import KongfzInstance
@@ -23,7 +22,7 @@ class KongfzAuctionSpider(scrapy.Spider):
         super(KongfzAuctionSpider).__init__(**kwargs)
 
     def start_requests(self):
-        return [SplashRequest(url = self.root.format(auction_id = self.auction_id))]
+        return [scrapy.FormRequest(url = self.root.format(auction_id = self.auction_id))]
 
     def parse(self, response):
         state = response.css('nav.kfz-banner .tip.show .f_left .c_white_o7::text').extract_first()
