@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import re
+import six
+import sys
 
 from tentacle.items import StampGroupCatalogItem, StampSingleCatalogItem, StampGroupCatalog, StampSingleCatalog
 
@@ -10,8 +12,35 @@ class ChinesestampSpider(scrapy.Spider):
     start_urls = [
         # 'http://www.chinesestamp.cn/j',
         # 'http://www.chinesestamp.cn/t',
-        'http://www.chinesestamp.cn/ji',
+        # 'http://www.chinesestamp.cn/ji',
         # 'http://www.chinesestamp.cn/te',
+        'http://www.chinesestamp.cn/y1992',
+        'http://www.chinesestamp.cn/y1993',
+        'http://www.chinesestamp.cn/y1994',
+        'http://www.chinesestamp.cn/y1995',
+        'http://www.chinesestamp.cn/y1996',
+        'http://www.chinesestamp.cn/y1997',
+        'http://www.chinesestamp.cn/y1998',
+        'http://www.chinesestamp.cn/y1999',
+        'http://www.chinesestamp.cn/y2000',
+        'http://www.chinesestamp.cn/y2001',
+        'http://www.chinesestamp.cn/y2002',
+        'http://www.chinesestamp.cn/y2003',
+        'http://www.chinesestamp.cn/y2004',
+        'http://www.chinesestamp.cn/y2005',
+        'http://www.chinesestamp.cn/y2006',
+        'http://www.chinesestamp.cn/y2007',
+        'http://www.chinesestamp.cn/y2008',
+        'http://www.chinesestamp.cn/y2009',
+        'http://www.chinesestamp.cn/y2010',
+        'http://www.chinesestamp.cn/y2011',
+        'http://www.chinesestamp.cn/y2012',
+        'http://www.chinesestamp.cn/y2013',
+        'http://www.chinesestamp.cn/y2014',
+        'http://www.chinesestamp.cn/y2015',
+        'http://www.chinesestamp.cn/y2016',
+        'http://www.chinesestamp.cn/y2017',
+        'http://www.chinesestamp.cn/y2018',
     ]
 
     def parse(self, response):
@@ -27,7 +56,8 @@ class ChinesestampSpider(scrapy.Spider):
 
         contents = response.css('div#contents .post_content table tr').extract()
         contents = '\n'.join(contents)
-        pub_date, group_num, results = '', 0, []
+        pub_date, group_num, results, m_info = '', 0, [], None
+
         if 'J' in official and official != '无编号':
             pub_date, group_num, results = self.parse_j_stamp_content(contents, name.strip(), official)
         elif 'T' in official:
@@ -39,6 +69,10 @@ class ChinesestampSpider(scrapy.Spider):
             pub_date, group_num, results = self.parse_c_stamp_content(contents, name.strip(), official)
         elif official.startswith('特'):
             pub_date, group_num, results = self.parse_c_stamp_content(contents, name.strip(), official)
+        elif self.is_year_stamp(official):
+            pub_date, group_num, results, m_info = self.parse_year_stamp_content(contents, name.strip(), official)
+        else:
+            raise NotImplementedError('unsupport stamp type')
 
         image_url = response.css('div#contents .post_content p a::attr(href)').extract_first()
         if image_url is None:
@@ -65,14 +99,54 @@ class ChinesestampSpider(scrapy.Spider):
             item['sequence'] = result['sequence']
             item['sequence_name'] = result['sequence_name']
             item['face_value'] = result.get('face_value', 0)
-            item['pub_number'] = result.get('pub_number', 0.0)
+            item['pub_number'] = result.get('pub_number', 0)
             if pub_date:
                 item['pub_date'] = pub_date
             try:
-                item = StampSingleCatalog.objects.get(group = group, sequence = result['sequence'])
+                StampSingleCatalog.objects.get(group = group, sequence = int(result['sequence']))
+            except StampSingleCatalog.DoesNotExist:
+                try:
+                    item.save()
+                except:
+                    """
+                    print(
+                        'group: %s' % item['group'],
+                        'sequence: %s' % item['sequence'],
+                        'face_value: %s' % item['face_value'],
+                        'pub_number: %s' % result.get('pub_number', 0),
+                        contents)"""
+                    six.reraise(*sys.exc_info())
+
+        # process M info
+        if m_info:
+            official = official.strip() + 'M'
+            item = StampGroupCatalogItem()
+            item['name'] = name.strip()
+            item['official'] = official
+            item['group_num'] = 1
+            item['total_face_value'] = m_info['face_value']
+            item['reference'] = response._get_url()
+            item['image_url'] = image_url or ''
+            try:
+                group = StampGroupCatalog.objects.get(official = official)
+            except StampGroupCatalog.DoesNotExist:
+                group = item.save()
+
+            item = StampSingleCatalogItem()
+            item['group'] = group
+            item['sequence'] = 1
+            item['sequence_name'] = m_info['sequence_name']
+            item['face_value'] = m_info.get('face_value', 0)
+            item['pub_number'] = m_info.get('pub_number', 0)
+            if pub_date:
+                item['pub_date'] = pub_date
+            try:
+                StampSingleCatalog.objects.get(group = group, sequence = 1)
             except StampSingleCatalog.DoesNotExist:
                 item.save()
 
+        yield {}
+        """
         yield {
             'official': official.strip(),
             'name': name.strip(),
@@ -81,7 +155,7 @@ class ChinesestampSpider(scrapy.Spider):
             'pub_date': pub_date,
             'sequences': results,
             'reference': response._get_url()
-        }
+        }"""
 
     def parse_j_stamp_content(self, contents, name, official):
 
@@ -199,6 +273,69 @@ class ChinesestampSpider(scrapy.Spider):
     def parse_c_stamp_content(self, contents, name, official):
         return self.parse_t_stamp_content(contents, name, official)
 
+    def parse_year_stamp_content(self, contents, name, official):
+
+        def get_pattern_1(matches):
+
+            results = []
+            for match in matches:
+                # normal match
+                if len(match) in[5, 6]:
+                    if match[0] == '小型张':
+                        sequence_num = 'M'
+                    else:
+                        sequence_num = match[2]
+                    sequence_name = match[3]
+                    face_value = self.parse_value(match[4])
+
+                    pub_number = 0
+                    if len(match) == 6 and pub_number and pub_number != 'M':
+                        pub_number = float(match[5])
+                else:
+                    raise ValueError('Unknown match info')
+
+                results.append({
+                    'sequence': sequence_num,
+                    'sequence_name': sequence_name,
+                    'face_value': face_value,
+                    'pub_number': pub_number
+                })
+
+            return results
+
+        patterns = (
+            (r"([（|(](\d{1,2})-(\d{1,2})[）|)]|小型张)\s*[TJ]?\s*([\u4e00-\u9fa5|\W|\d]+)\s+(\d+\.?\d+\s*[分|元])\s*(\d+.?\d+)?",
+             get_pattern_1),
+        )
+
+        # find publish date
+        pub_date = ''
+        match = re.search(r'(\d{4})年(\d{1,2})月(\d{1,2})日', contents)
+        if match:
+            pub_date = match.group(1) + '-' + match.group(2) + '-' + match.group(3)
+        else:
+            raise ValueError('Can\'t parse any date info.')
+
+        for idx, pattern in enumerate(patterns):
+            search = re.compile(pattern[0])
+            matches = search.findall(contents)
+            if len(matches):
+                break
+
+        if len(matches):
+            results = pattern[1](matches)
+            m_info = None
+            for res in results:
+                if res['sequence'] == 'M':
+                    m_info = res
+            if m_info is not None:
+                results.remove(m_info)
+
+            return pub_date, len(results), results, m_info
+        else:
+            raise ValueError('Not match any things.')
+
+
     def parse_date(self, contents):
         # find publish date
         pub_date = ''
@@ -207,3 +344,15 @@ class ChinesestampSpider(scrapy.Spider):
             pub_date = match.group(0)
 
         return pub_date
+
+    def is_year_stamp(self, official):
+        regex = r"\d{4}-[\u4e00-\u9fa5]?\d{1,2}"
+        return re.match(regex, official)
+
+    def parse_value(self, value):
+        if '元' in value:
+            return int(float(value.strip().strip('元').strip()) * 100)
+        elif '分' in value:
+            return int(value.strip().strip('分').strip())
+
+        return value
