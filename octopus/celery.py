@@ -30,11 +30,6 @@ app.config_from_object('django.conf:settings')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'search-kongfz-every-one-day': {
-        'task': 'octopus.tasks.kongfz_search',
-        'schedule': 60.0 * 60 * 24,
-        'args': ()
-    },
     'search-zhao-every-one-hour': {
         'task': 'octopus.tasks.zhao_search',
         'schedule': 60.0 * 60,
@@ -43,16 +38,6 @@ app.conf.beat_schedule = {
     'search-qqbb-every-one-hour': {
         'task': 'octopus.tasks.qqbb_search',
         'schedule': 60.0 * 60,
-        'args': ()
-    },
-    'watch-kongfz-auction-every-1-day': {
-        'task': 'octopus.tasks.kongfz_auction_watcher',
-        'schedule': 60.0 * 60 * 24,
-        'args': ()
-    },
-    'watch-kongfz-retail-every-6-hour': {
-        'task': 'octopus.tasks.kongfz_retail_watcher',
-        'schedule': 60.0 * 60 * 6,
         'args': ()
     },
     'watch-zhao-auction-every-15-minute': {
