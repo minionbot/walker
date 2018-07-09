@@ -17,13 +17,7 @@ else:
 
     class Celery(celery.Celery):
         def on_configure(self):
-            client = raven.Client('http://b54e335cd8e047808f07d9ac6711ae70:3d2840c713fe4341bbf70afc6e9faea0@ad.sentry.m.byted.org/260')
-
-            # register a custom filter to filter out duplicate logs
-            register_logger_signal(client)
-
-            # hook into the Celery error handler
-            register_signal(client)
+            pass
 
 app = Celery('octopus.tasks')
 app.config_from_object('django.conf:settings')
