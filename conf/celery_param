@@ -1,4 +1,4 @@
-CELERYD_NODES="walker_00 walker_01 walker_02 walker_03 walker_04 walker_05"
+CELERYD_NODES="walker_00 walker_01 walker_02"
 CELERY_BIN="/home/wangjing/opt/walker/.env/bin/celery"
 CELERY_APP="octopus"
 CELERYD_OPTS="--events --concurrency=20 --autoscale=20,5 -l debug"
