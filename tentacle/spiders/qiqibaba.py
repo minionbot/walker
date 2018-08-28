@@ -96,7 +96,7 @@ class QiQiBaBaSpider(BaseSpider):
             if source_fields[0].startswith('au'):
                 is_auction = True
 
-            source_id = int(source_fields[1][2:])
+            source_id = int(source_fields[0][2:])
             if source_id in self.imported_instances():
                 continue
 
