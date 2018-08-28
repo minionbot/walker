@@ -82,19 +82,21 @@ class QiQiBaBaSpider(BaseSpider):
 
         items = response.css('#body #both table.tbc.tbc_old')
         for date in items:
+            title_text = date.css('tbody tr td')[0].css('a img::attr(alt)').extract_first()
+            title_fields = title_text.rsplit('(', 1)
 
-            detail_fields = date.css('tbody tr td')[1]
-            title_fields = detail_fields.css('p>a::attr(title)').extract_first().rsplit('-', 1)
             if len(title_fields) != 2:
                 logger.error('can not parse title from qqbb', extra = {
                     'stack': True,
                 })
 
+            source_fields = str(title_fields[1]).split(')', 1)
+
             is_auction = False
-            if title_fields[1].startswith('au'):
+            if source_fields[0].startswith('au'):
                 is_auction = True
 
-            source_id = int(title_fields[1][2:])
+            source_id = int(source_fields[1][2:])
             if source_id in self.imported_instances():
                 continue
 
