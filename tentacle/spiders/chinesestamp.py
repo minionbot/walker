@@ -10,37 +10,13 @@ class ChinesestampSpider(scrapy.Spider):
     name = 'chinesestamp'
     allowed_domains = ['www.chinesestamp.cn']
     start_urls = [
-        # 'http://www.chinesestamp.cn/j',
-        # 'http://www.chinesestamp.cn/t',
-        # 'http://www.chinesestamp.cn/ji',
-        # 'http://www.chinesestamp.cn/te',
-        'http://www.chinesestamp.cn/y1992',
-        'http://www.chinesestamp.cn/y1993',
-        'http://www.chinesestamp.cn/y1994',
-        'http://www.chinesestamp.cn/y1995',
-        'http://www.chinesestamp.cn/y1996',
-        'http://www.chinesestamp.cn/y1997',
-        'http://www.chinesestamp.cn/y1998',
-        'http://www.chinesestamp.cn/y1999',
-        'http://www.chinesestamp.cn/y2000',
-        'http://www.chinesestamp.cn/y2001',
-        'http://www.chinesestamp.cn/y2002',
-        'http://www.chinesestamp.cn/y2003',
-        'http://www.chinesestamp.cn/y2004',
-        'http://www.chinesestamp.cn/y2005',
-        'http://www.chinesestamp.cn/y2006',
-        'http://www.chinesestamp.cn/y2007',
-        'http://www.chinesestamp.cn/y2008',
-        'http://www.chinesestamp.cn/y2009',
-        'http://www.chinesestamp.cn/y2010',
-        'http://www.chinesestamp.cn/y2011',
-        'http://www.chinesestamp.cn/y2012',
-        'http://www.chinesestamp.cn/y2013',
-        'http://www.chinesestamp.cn/y2014',
-        'http://www.chinesestamp.cn/y2015',
-        'http://www.chinesestamp.cn/y2016',
-        'http://www.chinesestamp.cn/y2017',
-        'http://www.chinesestamp.cn/y2018',
+        'http://chinesestamps.info/c-headed-commemorative-stamps',
+        'http://chinesestamps.info/s-headed-special-stamps',
+        'http://chinesestamps.info/w-headed-stamps',
+        'http://chinesestamps.info/j-headed-commemorative-stamps',
+        'http://chinesestamps.info/t-headed-special-stamps',
+        'http://chinesestamps.info/stamp-booklet',
+        ''
     ]
 
     def parse(self, response):
@@ -334,7 +310,6 @@ class ChinesestampSpider(scrapy.Spider):
             return pub_date, len(results), results, m_info
         else:
             raise ValueError('Not match any things.')
-
 
     def parse_date(self, contents):
         # find publish date
