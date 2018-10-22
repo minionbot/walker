@@ -70,6 +70,11 @@ class StampSingleCatalog(BaseModel):
         default = ''
     )
 
+    is_key = models.BooleanField(
+        '是否筋票',
+        default = False
+    )
+
     class Meta:
         verbose_name_plural = '单枚目录'
 
@@ -93,7 +98,7 @@ class StampGroupCatalog(BaseModel):
     )
 
     total_face_value = models.IntegerField(
-        '面值/分',
+        '总面值/分',
         default = 20
     )
 
@@ -151,14 +156,6 @@ class Stamp(BaseModel):
         StampGroupCatalog,
         default = None,
         on_delete = models.CASCADE
-    )
-
-    is_canceled = models.BooleanField(
-        default = False
-    )
-
-    count = models.IntegerField(
-        default = 1
     )
 
     postmark = models.CharField(

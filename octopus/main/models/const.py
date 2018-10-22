@@ -4,6 +4,8 @@
 
 from __future__ import unicode_literals
 
+from collections import namedtuple
+
 PURCHASE_SOURCE_TB = '淘宝'
 PURCHASE_SOURCE_7788 = '7788'
 PURCHASE_SOURCE_KFZ = '孔夫子'
@@ -77,4 +79,32 @@ POSTAGE_TYPE = (
     (POSTAGE_TYPE_MF, POSTAGE_TYPE_MF),
     (POSTAGE_TYPE_ZF, POSTAGE_TYPE_ZF),
     (POSTAGE_TYPE_LF, POSTAGE_TYPE_LF),
+)
+
+Condition = namedtuple('Condition', ['en', 'cn'])
+CONDITION_VF = Condition(en = 'VF', cn = '全品')
+CONDITION_FINE = Condition(en = 'F', cn = '上品')
+CONDITION_GOOD = Condition(en = 'G', cn = '中上品')
+CONDITION_AVG = Condition(en = 'A', cn = '中品')
+CONDITION_BAD = Condition(en = 'Bad', cn = '中品')
+
+
+CONDITION = (
+    (CONDITION_VF.en, CONDITION_VF.cn),
+    (CONDITION_FINE.en, CONDITION_FINE.cn),
+    (CONDITION_GOOD.en, CONDITION_GOOD.cn),
+    (CONDITION_AVG.en, CONDITION_AVG.cn),
+    (CONDITION_BAD.en, CONDITION_BAD.cn),
+)
+
+Usage = namedtuple('Usage', ['en', 'cn'])
+
+USAGE_CTO = Usage(en = 'CTO', cn = '盖销')
+USAGE_NEW = Usage(en = 'NEW', cn = '新票')
+USAGE_USED = Usage(en = 'USED', cn = '信销')
+
+USAGE = (
+    (USAGE_CTO.en, USAGE_CTO.cn),
+    (USAGE_NEW.en, USAGE_NEW.cn),
+    (USAGE_USED.en, USAGE_USED.cn),
 )
