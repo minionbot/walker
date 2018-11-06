@@ -44,9 +44,9 @@ class StampSingleCatalog(BaseModel):
         null = True,
     )
 
-    face_value = models.IntegerField(
+    face_value = models.FloatField(
         '面值/分',
-        default = 20
+        default = 8.0
     )
 
     gibbons = models.CharField(
@@ -75,8 +75,32 @@ class StampSingleCatalog(BaseModel):
         default = False
     )
 
+    p = models.FloatField(
+        '齿孔',
+    )
+
+    top_size = models.FloatField(
+        '上边距',
+    )
+
+    right_size = models.FloatField(
+        '右边距'
+    )
+
+    image_url = models.URLField(
+        default = '',
+        blank = True,
+        editable = False,
+    )
+
+    reference = models.URLField(
+        '来源',
+        blank = True,
+    )
+
     class Meta:
         verbose_name_plural = '单枚目录'
+        unique_together = (('group', 'sequence'),)
 
 
 class StampGroupCatalog(BaseModel):
@@ -97,17 +121,13 @@ class StampGroupCatalog(BaseModel):
         default = 1
     )
 
-    total_face_value = models.IntegerField(
+    total_face_value = models.FloatField(
         '总面值/分',
-        default = 20
+        default = 20.00
     )
 
-    period = models.CharField(
-        '年代分类',
-        choices = PERIODS,
-        max_length = 16,
-        blank = True,
-        editable = False
+    period = models.DateField(
+        '发行年代',
     )
 
     name_eng = models.CharField(
