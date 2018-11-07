@@ -3,12 +3,12 @@ from __future__ import division
 from datetime import datetime
 import re
 import scrapy
-from django.core.exceptions import ObjectDoesNotExist
 from octopus.main.models import StampGroupCatalog, StampSingleCatalog
 
 class ChinesestampSpider(scrapy.Spider):
     name = 'ybb'
     allowed_domains = ['www.china-ybb.com']
+
     start_urls = [
         'http://www.china-ybb.com/list/4k',  # 普
         'http://www.china-ybb.com/list/4h',  # 纪
@@ -35,13 +35,14 @@ class ChinesestampSpider(scrapy.Spider):
 
         index = pages.index(current_page)
         url = response.request.url
-        self.logger.info("scraping %s", url)
+        self.logger.debug("scraping %s", url)
 
         # has more page
         if index + 1 < len(pages):
             yield scrapy.Request(self.next_page(url, pages[index + 1]), callback = self.parse)
 
-        self.logger.info("processing %s", response.request.url)
+        self.logger.debug("processing %s", response.request.url)
+
         catalogs = response.css('body>div#mulu>div.mr>div.dl')
 
         for catalog in catalogs:
@@ -56,7 +57,9 @@ class ChinesestampSpider(scrapy.Spider):
 
             name = name.strip()
 
-            self.logger.info("fetched [%s][%s]" % (official, name))
+            self.logger.debug("fetched [%s][%s]" % (official, name))
+
+            new_keys, old_keys = self.detect_key(catalog.css('div.dd>ul>li>a'))
 
             defaults = {
                 'country': 'CN',
@@ -70,10 +73,10 @@ class ChinesestampSpider(scrapy.Spider):
             )
 
             for ref in refs:
-                self.logger.info("will fetch single item: %s", ref)
+                self.logger.debug("will fetch single item: %s", ref)
                 yield scrapy.Request(self.url_prefix + ref,
                                      callback = self.process_single,
-                                     meta = {'group': group})
+                                     meta = {'group': group, 'new_keys': new_keys, 'old_keys': old_keys})
 
         yield {}
 
@@ -97,22 +100,24 @@ class ChinesestampSpider(scrapy.Spider):
 
     def process_single(self, response):
         url = response.request.url
-        title_fields = response.css('body>div#byc>div#ml>div#mlt>div#mltl>div#h2::attr(text)s').extract()[0]
+        title_fields = response.css('body>div#byc>div#ml>div#mlt>div#mltl>div#h2::text').extract_first()
         name_serial = title_fields.split('<br>')[0]
 
         self.logger.debug("name_serial: %s" % name_serial)
 
         group = response.request.meta["group"]
+        new_keys = response.request.meta["new_keys"]
+        old_keys = response.request.meta["old_keys"]
 
         fields = re.findall(r"（(\d+-\d+)）", name_serial)
         sequence = int(fields[0].split('-')[1])
 
-        # self.logger.info("processing %s" % fields[0])
-
         item = {
             'reference': response.request.url,
             'image_url': self.url_prefix + '/' +
-                         response.css('body>div#byc div#pic>.zoom-section a::attr(href)').extract_first()
+                         response.css('body>div#byc div#pic>.zoom-section a::attr(href)').extract_first(),
+            'price_percent':   new_keys[sequence] if sequence in new_keys else 0.0,
+            'old_price_percent':   old_keys[sequence] if sequence in old_keys else 0.0,
         }
 
         attrs = response.css('body>div#byc>div#mr>ul.b_info')[0].css('li::text').extract()
@@ -128,8 +133,7 @@ class ChinesestampSpider(scrapy.Spider):
             if attr.startswith(face_prefix):
                 v = re.findall(r"\d+\.?\d*", attr)
                 if len(v) == 2:
-                    item['old_face_value'] = int(v[-1])
-
+                    item['old_face_value'] = float(v[-1])
                 if not self.is_old_face(group.official):
                     item['face_value'] = float(v[0]) * 100
                 else:
@@ -159,4 +163,28 @@ class ChinesestampSpider(scrapy.Spider):
             defaults = item
         )
 
+        self.logger.info("processed %s" % name_serial)
         return {}
+
+    def detect_key(self, prices):
+        total = 0.0
+        old_total = 0.0
+
+        for price in prices:
+            fields = price.css('a>font::text').extract()
+            self.logger.debug("%s", price)
+            if len(fields) > 1:
+                total += float(fields[1])
+            if len(fields) == 3:
+                old_total += float(fields[2])
+
+        new_percent = {}
+        old_percent = {}
+        for idx, price in enumerate(prices):
+            fields = price.css('a>font::text').extract()
+            if len(fields) > 1:
+                new_percent[idx + 1] = '%0.2f' % (float(fields[1])/total)
+            if len(fields) == 3 and old_total != 0.0:
+                old_percent[idx + 1] = '%0.2f' % (float(fields[2])/old_total)
+
+        return new_percent, old_percent

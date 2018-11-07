@@ -44,7 +44,7 @@ class StampSingleCatalog(BaseModel):
         null = True,
     )
 
-    old_face_value = models.IntegerField(
+    old_face_value = models.FloatField(
         '改值原面值',
         default = 0,
     )
@@ -52,6 +52,16 @@ class StampSingleCatalog(BaseModel):
     face_value = models.FloatField(
         '面值/分',
         default = 8.0
+    )
+
+    price_percent = models.FloatField(
+        '新票全套价格占比',
+        default = 0.0
+    )
+
+    old_price_percent = models.FloatField(
+        '旧票全套价格占比',
+        default = 0.0
     )
 
     gibbons = models.CharField(
