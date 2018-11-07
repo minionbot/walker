@@ -29,7 +29,7 @@ class StampSingleCatalog(BaseModel):
 
     sequence_name = models.CharField(
         '序号名称',
-        max_length = 32,
+        max_length = 128,
         blank = True,
     )
 
@@ -42,6 +42,11 @@ class StampSingleCatalog(BaseModel):
         '发行日期',
         default = None,
         null = True,
+    )
+
+    old_face_value = models.IntegerField(
+        '改值原面值',
+        default = 0,
     )
 
     face_value = models.FloatField(

@@ -10,15 +10,14 @@ class ChinesestampSpider(scrapy.Spider):
     name = 'ybb'
     allowed_domains = ['www.china-ybb.com']
     start_urls = [
-        'http://www.china-ybb.com/list/4k',
-        'http://www.china-ybb.com/list/4h',
-        'http://www.china-ybb.com/list/4q',
-        'http://www.china-ybb.com/list/4r',
-        'http://www.china-ybb.com/list/4a',
-        'http://www.china-ybb.com/list/4b',
-        'http://www.china-ybb.com/list/4d',
-        'http://www.china-ybb.com/list/4l',
-
+        'http://www.china-ybb.com/list/4k',  # 普
+        'http://www.china-ybb.com/list/4h',  # 纪
+        'http://www.china-ybb.com/list/4q',  # 特
+        'http://www.china-ybb.com/list/4r',  # 文
+        'http://www.china-ybb.com/list/4c',  # 编
+        'http://www.china-ybb.com/list/4a',  # J
+        'http://www.china-ybb.com/list/4b',  # T
+        'http://www.china-ybb.com/list/4l',  # 欠改军航包
     ]
 
     url_prefix = 'http://www.china-ybb.com'
@@ -52,6 +51,9 @@ class ChinesestampSpider(scrapy.Spider):
             refs = catalog.css('div.dd>ul>li>a::attr(href)').extract()
 
             official, name, num, year = map(lambda x: x.strip(), title_fields)
+            if official.startswith('个'):
+                continue
+
             name = name.strip()
 
             self.logger.info("fetched [%s][%s]" % (official, name))
@@ -79,7 +81,7 @@ class ChinesestampSpider(scrapy.Spider):
         v = re.findall(r'\d+', official)
         official = str(official)
 
-        if official.startswith('普东') or official.startswith('普旅') or \
+        if official.startswith('普东') or official.startswith('普旅') or official.startswith('普无号') or \
             official.startswith('改') or official.startswith('欠') or \
             official.startswith('航1') or official.startswith('军1'):
             return True
@@ -95,8 +97,9 @@ class ChinesestampSpider(scrapy.Spider):
 
     def process_single(self, response):
         url = response.request.url
-        title_fields = response.css('body>div#byc>div#ml>div#mlt>div#mltl>div#h2').extract()[0]
+        title_fields = response.css('body>div#byc>div#ml>div#mlt>div#mltl>div#h2::attr(text)s').extract()[0]
         name_serial = title_fields.split('<br>')[0]
+
         self.logger.debug("name_serial: %s" % name_serial)
 
         group = response.request.meta["group"]
@@ -123,7 +126,10 @@ class ChinesestampSpider(scrapy.Spider):
             if attr.startswith(name_prefix):
                 item['sequence_name'] = attr.lstrip(name_prefix).strip()
             if attr.startswith(face_prefix):
-                v = re.findall(r"\d+\.?\d+", attr)
+                v = re.findall(r"\d+\.?\d*", attr)
+                if len(v) == 2:
+                    item['old_face_value'] = int(v[-1])
+
                 if not self.is_old_face(group.official):
                     item['face_value'] = float(v[0]) * 100
                 else:
@@ -132,13 +138,18 @@ class ChinesestampSpider(scrapy.Spider):
                 v = re.findall(r"\d+\.\d+", attr)
                 item['pub_number'] = float(v[0]) / 10
             if attr.startswith(pub_date_prefix):
-                v = attr.lstrip(pub_date_prefix).strip()
-                item['pub_date'] = datetime.strptime(v, '%Y年%m月%d日')
+                v = str(attr).lstrip(pub_date_prefix).strip()
+                if v.endswith('日'):
+                    item['pub_date'] = datetime.strptime(v, '%Y年%m月%d日')
+                else:
+                    item['pub_date'] = datetime.strptime(v, '%Y年%m月')
             if attr.startswith(p_prefix):
-                v = re.findall(r"\d+\.?\d+", attr)
-                item['p'] = float(v[0])
+                v = re.findall(r"\d+\.?\d*", attr)
+                if len(v):
+                    item['p'] = float(v[0])
+
             if attr.startswith(size_prefix):
-                v = re.findall(r"(\d+\.?\d+)\*(\d+\.?\d+)", attr)
+                v = re.findall(r"(\d+\.?\d*)\*(\d+\.?\d*)", attr)
                 item['top_size'] = float(v[0][0])
                 item['right_size'] = float(v[0][1])
 
